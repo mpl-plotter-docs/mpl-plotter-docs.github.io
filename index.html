@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>mpl_plotter API documentation</title>
-<meta name="description" content="Welcome to the Alexandria API documentation! …" />
+<meta name="description" content="Welcome to the MPL Plotter API documentation! …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,9 +22,102 @@
 <h1 class="title">Package <code>mpl_plotter</code></h1>
 </header>
 <section id="section-intro">
-<p>Welcome to the Alexandria API documentation!</p>
-<h1 id="tldr">TL;DR</h1>
-<p>Alexandria is a Python general utilities package.</p>
+<p>Welcome to the MPL Plotter API documentation!</p>
+<h1 id="introduction">Introduction</h1>
+<p>MPL Plotter is a Matplotlib based Python plotting library built with the goals of achieving publication-quality plots in an efficient and comprehensive way. </p>
+<hr>
+<p>The fundamental premise of MPL Plotter is to:
+- Generate publication quality plots in a single function call
+- Allow for any and all further customization with regular Matplotlib if needed</p>
+<p>As a result, MPL Plotter is built with Matplotlib compatibility in mind: its capabilities expand when used in combination. Keep reading to see them in action!</p>
+<hr>
+<p>There's three ways to use MPL Plotter:
+- Calls to the 2D and 3D plotting classes.
+- Using presets, either those shipped with the library, or custom ones.
+- Calling the "decorator" <code>custom_canvas</code> class. This class won't plot anything, but rather allow you to create a customized canvas on which to plot using Matplotlib.</p>
+<p>The first will be covered in Sections 4 and 5, from basic usage to in depth customization. The base output and API stability of all base methods can be seen in Section 6. The latter two, in Section 8.</p>
+<p>Say goodbye to hours getting your plots in shape!</p>
+<h1 id="map-of-the-library">Map of the library</h1>
+<ul>
+<li><strong>Bold</strong>: package</li>
+<li><code>Code</code>: methods</li>
+<li>
+<p>Plain/: directories </p>
+</li>
+<li>
+<p><strong>mpl_plotter</strong></p>
+<ul>
+<li><code><a title="mpl_plotter.figure" href="#mpl_plotter.figure">figure()</a></code></li>
+<li><code><a title="mpl_plotter.get_available_fonts" href="#mpl_plotter.get_available_fonts">get_available_fonts()</a></code></li>
+<li><strong>two_d</strong><ul>
+<li><code>line</code></li>
+<li><code>scatter</code></li>
+<li><code>heatmap</code></li>
+<li><code>quiver</code></li>
+<li><code>streamline</code></li>
+<li><code>fill_area</code></li>
+<li><code>floating_text</code></li>
+<li>comparison/<ul>
+<li><code>comparison</code></li>
+</ul>
+</li>
+<li>panes/<ul>
+<li><code>n_pane_single</code></li>
+<li><code>n_pane_comparison</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>three_d</strong><ul>
+<li><code>line</code></li>
+<li><code>scatter</code></li>
+<li><code>surface</code></li>
+<li><code>floating_text</code></li>
+</ul>
+</li>
+<li><strong>canvas</strong><ul>
+<li><code>custom_canvas</code></li>
+</ul>
+</li>
+<li><strong>presets</strong><ul>
+<li><strong>publication</strong><ul>
+<li><code><a title="mpl_plotter.two_d" href="two_d/index.html">mpl_plotter.two_d</a></code></li>
+<li><code><a title="mpl_plotter.three_d" href="three_d/index.html">mpl_plotter.three_d</a></code></li>
+</ul>
+</li>
+<li><strong>precision</strong><ul>
+<li><code><a title="mpl_plotter.two_d" href="two_d/index.html">mpl_plotter.two_d</a></code></li>
+<li><code><a title="mpl_plotter.three_d" href="three_d/index.html">mpl_plotter.three_d</a></code></li>
+</ul>
+</li>
+<li><strong>custom</strong><ul>
+<li><code><a title="mpl_plotter.two_d" href="two_d/index.html">mpl_plotter.two_d</a></code></li>
+<li><code><a title="mpl_plotter.three_d" href="three_d/index.html">mpl_plotter.three_d</a></code></li>
+<li><code>generate_preset_2d</code></li>
+<li><code>generate_preset_3d</code></li>
+</ul>
+</li>
+<li>data/<ul>
+<li><code>publication</code></li>
+<li><code>precision</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>color</strong><ul>
+<li><strong>maps</strong><ul>
+<li><code>custom</code></li>
+</ul>
+</li>
+<li><strong>schemes</strong><ul>
+<li><code>one</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -175,7 +268,8 @@ Pyplot.</p>
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#tldr">TL;DR</a></li>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#map-of-the-library">Map of the library</a></li>
 </ul>
 </div>
 <ul id="index">
