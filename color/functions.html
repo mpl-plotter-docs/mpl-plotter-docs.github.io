@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>mpl_plotter.color.schemes API documentation</title>
+<title>mpl_plotter.color.functions API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,52 +19,84 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>mpl_plotter.color.schemes</code></h1>
+<h1 class="title">Module <code>mpl_plotter.color.functions</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from matplotlib.colors import LinearSegmentedColormap
+<pre><code class="python">import re
+from matplotlib.colors import to_hex
 
 
-def colorscheme_one():
-    custom = [&#34;darkred&#34;,
-              &#34;#1f8fff&#34;,
-              &#34;#FF8F1F&#34;,
-              &#34;#00C298&#34;,
-              &#34;#FFBD00&#34;,
-              &#34;#00FFC4&#34;,
-              &#34;#FF003B&#34;]
-    tableau = [&#39;tab:blue&#39;,
-               &#39;tab:orange&#39;,
-               &#39;tab:green&#39;,
-               &#39;tab:red&#39;,
-               &#39;tab:purple&#39;,
-               &#39;tab:brown&#39;,
-               &#39;tab:pink&#39;,
-               &#39;tab:gray&#39;,
-               &#39;tab:olive&#39;,
-               &#39;tab:cyan&#39;]
-    return custom + tableau
-
-
-def custom(red, green, blue,
-           name=&#34;coolheat&#34;, n=1024):
+def hex_to_rgb(color):
     &#34;&#34;&#34;
-    :param red: List of (red fraction, y0, y1) tuples
-    :param green: List of (red fraction, y0, y1)
-    :param blue: List of (red fraction, y0, y1)
-    :param name: Colormap name
-    :param n: RBG quantization levels
-    :return: Colormap
+    :type color: string
     &#34;&#34;&#34;
-    dictionary = {
-        &#39;red&#39;: red,
-        &#39;green&#39;: green,
-        &#39;blue&#39;: blue}
-    return LinearSegmentedColormap(name, dictionary, n)</code></pre>
+
+    if not re.match(&#34;#([0-9a-fA-f]{2}){3}&#34;, color):
+        color = to_hex(color)
+
+    c = color[1:]
+    return [int(re.match(&#34;[0-9a-fA-f]{2}&#34;, c[i:i+2]).string, 16) for i in range(0, len(c), 2)]
+
+
+def rgb_to_hex(color):
+    &#34;&#34;&#34;
+    :type color: list of int
+    &#34;&#34;&#34;
+    r, g, b = color
+    return f&#39;#{r:02x}{g:02x}{b:02x}&#39;
+
+
+def complementary(color, fmt=&#39;hex&#39;):
+    &#34;&#34;&#34;
+    Return complementary of [R, G, B] or hex color.
+
+    :param fmt:  Output format: &#39;hex&#39; or &#39;rgb&#39;.
+
+    :type color: list of int or string
+    :type fmt:   string
+    &#34;&#34;&#34;
+
+    assert isinstance(color, list) or isinstance(color, str)
+
+    if isinstance(color, list):
+        comp = [255 - i for i in color]
+    elif isinstance(color, str):
+        comp = [255 - i for i in hex_to_rgb(color)]
+
+    if fmt == &#39;hex&#39;:
+        return rgb_to_hex(comp)
+    elif fmt == &#39;rgb&#39;:
+        return comp
+
+
+def delta(color, factor, fmt=&#39;hex&#39;):
+    &#34;&#34;&#34;
+    Darker or lighten the input color by a percentage of
+    &lt;factor&gt; ([-1, 1]) of the color spectrum (0-255).
+
+    :param fmt:    Output format: &#39;hex&#39; or &#39;rgb&#39;.
+    :param factor: [-1, 1] Measure in which the color will be modified.
+
+    :type color:   list of int or string
+    :type factor:  float
+    :type fmt:     string
+    &#34;&#34;&#34;
+
+    assert isinstance(color, list) or isinstance(color, str)
+
+    if isinstance(color, list):
+        c_mod = [min(max(0, int(i + factor*255)), 255) for i in color]
+    elif isinstance(color, str):
+        c_mod = [min(max(0, int(i + factor*255)), 255) for i in hex_to_rgb(color)]
+
+    if fmt == &#39;hex&#39;:
+        return rgb_to_hex(c_mod)
+    elif fmt == &#39;rgb&#39;:
+        return c_mod</code></pre>
 </details>
 </section>
 <section>
@@ -74,65 +106,124 @@ def custom(red, green, blue,
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="mpl_plotter.color.schemes.colorscheme_one"><code class="name flex">
-<span>def <span class="ident">colorscheme_one</span></span>(<span>)</span>
+<dt id="mpl_plotter.color.functions.complementary"><code class="name flex">
+<span>def <span class="ident">complementary</span></span>(<span>color, fmt='hex')</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Return complementary of [R, G, B] or hex color.</p>
+<p>:param fmt:
+Output format: 'hex' or 'rgb'.</p>
+<p>:type color: list of int or string
+:type fmt:
+string</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def colorscheme_one():
-    custom = [&#34;darkred&#34;,
-              &#34;#1f8fff&#34;,
-              &#34;#FF8F1F&#34;,
-              &#34;#00C298&#34;,
-              &#34;#FFBD00&#34;,
-              &#34;#00FFC4&#34;,
-              &#34;#FF003B&#34;]
-    tableau = [&#39;tab:blue&#39;,
-               &#39;tab:orange&#39;,
-               &#39;tab:green&#39;,
-               &#39;tab:red&#39;,
-               &#39;tab:purple&#39;,
-               &#39;tab:brown&#39;,
-               &#39;tab:pink&#39;,
-               &#39;tab:gray&#39;,
-               &#39;tab:olive&#39;,
-               &#39;tab:cyan&#39;]
-    return custom + tableau</code></pre>
+<pre><code class="python">def complementary(color, fmt=&#39;hex&#39;):
+    &#34;&#34;&#34;
+    Return complementary of [R, G, B] or hex color.
+
+    :param fmt:  Output format: &#39;hex&#39; or &#39;rgb&#39;.
+
+    :type color: list of int or string
+    :type fmt:   string
+    &#34;&#34;&#34;
+
+    assert isinstance(color, list) or isinstance(color, str)
+
+    if isinstance(color, list):
+        comp = [255 - i for i in color]
+    elif isinstance(color, str):
+        comp = [255 - i for i in hex_to_rgb(color)]
+
+    if fmt == &#39;hex&#39;:
+        return rgb_to_hex(comp)
+    elif fmt == &#39;rgb&#39;:
+        return comp</code></pre>
 </details>
 </dd>
-<dt id="mpl_plotter.color.schemes.custom"><code class="name flex">
-<span>def <span class="ident">custom</span></span>(<span>red, green, blue, name='coolheat', n=1024)</span>
+<dt id="mpl_plotter.color.functions.delta"><code class="name flex">
+<span>def <span class="ident">delta</span></span>(<span>color, factor, fmt='hex')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>:param red: List of (red fraction, y0, y1) tuples
-:param green: List of (red fraction, y0, y1)
-:param blue: List of (red fraction, y0, y1)
-:param name: Colormap name
-:param n: RBG quantization levels
-:return: Colormap</p></div>
+<div class="desc"><p>Darker or lighten the input color by a percentage of
+<factor> ([-1, 1]) of the color spectrum (0-255).</p>
+<p>:param fmt:
+Output format: 'hex' or 'rgb'.
+:param factor: [-1, 1] Measure in which the color will be modified.</p>
+<p>:type color:
+list of int or string
+:type factor:
+float
+:type fmt:
+string</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def custom(red, green, blue,
-           name=&#34;coolheat&#34;, n=1024):
+<pre><code class="python">def delta(color, factor, fmt=&#39;hex&#39;):
     &#34;&#34;&#34;
-    :param red: List of (red fraction, y0, y1) tuples
-    :param green: List of (red fraction, y0, y1)
-    :param blue: List of (red fraction, y0, y1)
-    :param name: Colormap name
-    :param n: RBG quantization levels
-    :return: Colormap
+    Darker or lighten the input color by a percentage of
+    &lt;factor&gt; ([-1, 1]) of the color spectrum (0-255).
+
+    :param fmt:    Output format: &#39;hex&#39; or &#39;rgb&#39;.
+    :param factor: [-1, 1] Measure in which the color will be modified.
+
+    :type color:   list of int or string
+    :type factor:  float
+    :type fmt:     string
     &#34;&#34;&#34;
-    dictionary = {
-        &#39;red&#39;: red,
-        &#39;green&#39;: green,
-        &#39;blue&#39;: blue}
-    return LinearSegmentedColormap(name, dictionary, n)</code></pre>
+
+    assert isinstance(color, list) or isinstance(color, str)
+
+    if isinstance(color, list):
+        c_mod = [min(max(0, int(i + factor*255)), 255) for i in color]
+    elif isinstance(color, str):
+        c_mod = [min(max(0, int(i + factor*255)), 255) for i in hex_to_rgb(color)]
+
+    if fmt == &#39;hex&#39;:
+        return rgb_to_hex(c_mod)
+    elif fmt == &#39;rgb&#39;:
+        return c_mod</code></pre>
+</details>
+</dd>
+<dt id="mpl_plotter.color.functions.hex_to_rgb"><code class="name flex">
+<span>def <span class="ident">hex_to_rgb</span></span>(<span>color)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>:type color: string</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def hex_to_rgb(color):
+    &#34;&#34;&#34;
+    :type color: string
+    &#34;&#34;&#34;
+
+    if not re.match(&#34;#([0-9a-fA-f]{2}){3}&#34;, color):
+        color = to_hex(color)
+
+    c = color[1:]
+    return [int(re.match(&#34;[0-9a-fA-f]{2}&#34;, c[i:i+2]).string, 16) for i in range(0, len(c), 2)]</code></pre>
+</details>
+</dd>
+<dt id="mpl_plotter.color.functions.rgb_to_hex"><code class="name flex">
+<span>def <span class="ident">rgb_to_hex</span></span>(<span>color)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>:type color: list of int</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rgb_to_hex(color):
+    &#34;&#34;&#34;
+    :type color: list of int
+    &#34;&#34;&#34;
+    r, g, b = color
+    return f&#39;#{r:02x}{g:02x}{b:02x}&#39;</code></pre>
 </details>
 </dd>
 </dl>
@@ -153,8 +244,10 @@ def custom(red, green, blue,
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="mpl_plotter.color.schemes.colorscheme_one" href="#mpl_plotter.color.schemes.colorscheme_one">colorscheme_one</a></code></li>
-<li><code><a title="mpl_plotter.color.schemes.custom" href="#mpl_plotter.color.schemes.custom">custom</a></code></li>
+<li><code><a title="mpl_plotter.color.functions.complementary" href="#mpl_plotter.color.functions.complementary">complementary</a></code></li>
+<li><code><a title="mpl_plotter.color.functions.delta" href="#mpl_plotter.color.functions.delta">delta</a></code></li>
+<li><code><a title="mpl_plotter.color.functions.hex_to_rgb" href="#mpl_plotter.color.functions.hex_to_rgb">hex_to_rgb</a></code></li>
+<li><code><a title="mpl_plotter.color.functions.rgb_to_hex" href="#mpl_plotter.color.functions.rgb_to_hex">rgb_to_hex</a></code></li>
 </ul>
 </li>
 </ul>
