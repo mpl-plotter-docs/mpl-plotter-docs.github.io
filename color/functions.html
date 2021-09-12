@@ -36,28 +36,7 @@ Color functions
 &#34;&#34;&#34;
 
 
-import re
-from matplotlib.colors import to_hex
-
-
-def hex_to_rgb(color):
-    &#34;&#34;&#34;
-    :type color: string
-    &#34;&#34;&#34;
-
-    if not re.match(&#34;#([0-9a-fA-f]{2}){3}&#34;, color):
-        color = to_hex(color)
-
-    c = color[1:]
-    return [int(re.match(&#34;[0-9a-fA-f]{2}&#34;, c[i:i+2]).string, 16) for i in range(0, len(c), 2)]
-
-
-def rgb_to_hex(color):
-    &#34;&#34;&#34;
-    :type color: list of int
-    &#34;&#34;&#34;
-    r, g, b = color
-    return f&#39;#{r:02x}{g:02x}{b:02x}&#39;
+from matplotlib.colors import to_hex, to_rgba
 
 
 def complementary(color, fmt=&#39;hex&#39;):
@@ -70,15 +49,15 @@ def complementary(color, fmt=&#39;hex&#39;):
     :type fmt:   string
     &#34;&#34;&#34;
 
-    assert isinstance(color, list) or isinstance(color, str)
+    assert isinstance(color, list) or isinstance(color, tuple) or isinstance(color, str)
 
-    if isinstance(color, list):
-        comp = [255 - i for i in color]
+    if isinstance(color, list) or isinstance(color, tuple):
+        comp = [(1 - i) for i in color]
     elif isinstance(color, str):
-        comp = [255 - i for i in hex_to_rgb(color)]
+        comp = [(1 - i) for i in to_rgba(color, 1.0)]
 
     if fmt == &#39;hex&#39;:
-        return rgb_to_hex(comp)
+        return to_hex(comp)
     elif fmt == &#39;rgb&#39;:
         return comp
 
@@ -96,15 +75,15 @@ def delta(color, factor, fmt=&#39;hex&#39;):
     :type fmt:     string
     &#34;&#34;&#34;
 
-    assert isinstance(color, list) or isinstance(color, str)
+    assert isinstance(color, list) or isinstance(color, tuple) or isinstance(color, str)
 
-    if isinstance(color, list):
-        c_mod = [min(max(0, int(i + factor*255)), 255) for i in color]
+    if isinstance(color, list) or isinstance(color, tuple):
+        c_mod = [min(max(0, i + factor), 1) for i in color]
     elif isinstance(color, str):
-        c_mod = [min(max(0, int(i + factor*255)), 255) for i in hex_to_rgb(color)]
+        c_mod = [min(max(0, i + factor), 1) for i in to_rgba(color, 1.0)]
 
     if fmt == &#39;hex&#39;:
-        return rgb_to_hex(c_mod)
+        return to_hex(c_mod)
     elif fmt == &#39;rgb&#39;:
         return c_mod</code></pre>
 </details>
@@ -140,15 +119,15 @@ string</p></div>
     :type fmt:   string
     &#34;&#34;&#34;
 
-    assert isinstance(color, list) or isinstance(color, str)
+    assert isinstance(color, list) or isinstance(color, tuple) or isinstance(color, str)
 
-    if isinstance(color, list):
-        comp = [255 - i for i in color]
+    if isinstance(color, list) or isinstance(color, tuple):
+        comp = [(1 - i) for i in color]
     elif isinstance(color, str):
-        comp = [255 - i for i in hex_to_rgb(color)]
+        comp = [(1 - i) for i in to_rgba(color, 1.0)]
 
     if fmt == &#39;hex&#39;:
-        return rgb_to_hex(comp)
+        return to_hex(comp)
     elif fmt == &#39;rgb&#39;:
         return comp</code></pre>
 </details>
@@ -185,55 +164,17 @@ string</p></div>
     :type fmt:     string
     &#34;&#34;&#34;
 
-    assert isinstance(color, list) or isinstance(color, str)
+    assert isinstance(color, list) or isinstance(color, tuple) or isinstance(color, str)
 
-    if isinstance(color, list):
-        c_mod = [min(max(0, int(i + factor*255)), 255) for i in color]
+    if isinstance(color, list) or isinstance(color, tuple):
+        c_mod = [min(max(0, i + factor), 1) for i in color]
     elif isinstance(color, str):
-        c_mod = [min(max(0, int(i + factor*255)), 255) for i in hex_to_rgb(color)]
+        c_mod = [min(max(0, i + factor), 1) for i in to_rgba(color, 1.0)]
 
     if fmt == &#39;hex&#39;:
-        return rgb_to_hex(c_mod)
+        return to_hex(c_mod)
     elif fmt == &#39;rgb&#39;:
         return c_mod</code></pre>
-</details>
-</dd>
-<dt id="mpl_plotter.color.functions.hex_to_rgb"><code class="name flex">
-<span>def <span class="ident">hex_to_rgb</span></span>(<span>color)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>:type color: string</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def hex_to_rgb(color):
-    &#34;&#34;&#34;
-    :type color: string
-    &#34;&#34;&#34;
-
-    if not re.match(&#34;#([0-9a-fA-f]{2}){3}&#34;, color):
-        color = to_hex(color)
-
-    c = color[1:]
-    return [int(re.match(&#34;[0-9a-fA-f]{2}&#34;, c[i:i+2]).string, 16) for i in range(0, len(c), 2)]</code></pre>
-</details>
-</dd>
-<dt id="mpl_plotter.color.functions.rgb_to_hex"><code class="name flex">
-<span>def <span class="ident">rgb_to_hex</span></span>(<span>color)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>:type color: list of int</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def rgb_to_hex(color):
-    &#34;&#34;&#34;
-    :type color: list of int
-    &#34;&#34;&#34;
-    r, g, b = color
-    return f&#39;#{r:02x}{g:02x}{b:02x}&#39;</code></pre>
 </details>
 </dd>
 </dl>
@@ -258,8 +199,6 @@ string</p></div>
 <ul class="">
 <li><code><a title="mpl_plotter.color.functions.complementary" href="#mpl_plotter.color.functions.complementary">complementary</a></code></li>
 <li><code><a title="mpl_plotter.color.functions.delta" href="#mpl_plotter.color.functions.delta">delta</a></code></li>
-<li><code><a title="mpl_plotter.color.functions.hex_to_rgb" href="#mpl_plotter.color.functions.hex_to_rgb">hex_to_rgb</a></code></li>
-<li><code><a title="mpl_plotter.color.functions.rgb_to_hex" href="#mpl_plotter.color.functions.rgb_to_hex">rgb_to_hex</a></code></li>
 </ul>
 </li>
 </ul>
