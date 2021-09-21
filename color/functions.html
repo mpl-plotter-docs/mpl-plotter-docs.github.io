@@ -35,7 +35,8 @@ Color functions
 ---------------
 &#34;&#34;&#34;
 
-
+import numpy as np
+import matplotlib as mpl
 from matplotlib.colors import to_hex, to_rgba
 
 
@@ -85,7 +86,41 @@ def delta(color, factor, fmt=&#39;hex&#39;):
     if fmt == &#39;hex&#39;:
         return to_hex(c_mod)
     elif fmt == &#39;rgb&#39;:
-        return c_mod</code></pre>
+        return c_mod
+
+
+def mapstack(maps,
+             fractions=None,
+             ranges=None):
+    &#34;&#34;&#34;
+    Create a colormap stacking an arbitrary number of
+    conventional Matplotlib colormaps.
+
+    :param maps:      List of colormap NAMES
+    :param fractions: For each original colormap, the fraction it&#39;ll take of the merged colormap.
+                         [0&lt;fr_0&lt;1, ...]
+    :param ranges:    For each original colormap, the range taken.
+                         [(0=&lt;min&lt;1, 0&lt;max&lt;=1)_0, ...]
+
+    :type maps:       list of str
+    :type fractions:  list of float
+    :type ranges:     list of tuple
+
+    :return: mpl.colors.LinearSegmentedColormap
+    &#34;&#34;&#34;
+
+    if isinstance(fractions, type(None)):
+        fractions = np.ones(len(maps))*1/len(maps)
+
+    if isinstance(ranges, type(None)):
+        ranges = np.tile(np.array([0, 1]), (len(maps), 1))
+
+    stack = tuple(mpl.cm.get_cmap(maps[i])(np.linspace(ranges[i][0], ranges[i][1], int(round(256 * fractions[i], 0))))
+                  for i in range(len(maps)))
+
+    colors = np.vstack(stack)
+
+    return mpl.colors.LinearSegmentedColormap.from_list(&#39;custom_RdBu&#39;, colors)</code></pre>
 </details>
 </section>
 <section>
@@ -177,6 +212,64 @@ string</p></div>
         return c_mod</code></pre>
 </details>
 </dd>
+<dt id="mpl_plotter.color.functions.mapstack"><code class="name flex">
+<span>def <span class="ident">mapstack</span></span>(<span>maps, fractions=None, ranges=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a colormap stacking an arbitrary number of
+conventional Matplotlib colormaps.</p>
+<p>:param maps:
+List of colormap NAMES
+:param fractions: For each original colormap, the fraction it'll take of the merged colormap.
+[0&lt;fr_0&lt;1, &hellip;]
+:param ranges:
+For each original colormap, the range taken.
+[(0=&lt;min&lt;1, 0&lt;max&lt;=1)_0, &hellip;]</p>
+<p>:type maps:
+list of str
+:type fractions:
+list of float
+:type ranges:
+list of tuple</p>
+<p>:return: mpl.colors.LinearSegmentedColormap</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mapstack(maps,
+             fractions=None,
+             ranges=None):
+    &#34;&#34;&#34;
+    Create a colormap stacking an arbitrary number of
+    conventional Matplotlib colormaps.
+
+    :param maps:      List of colormap NAMES
+    :param fractions: For each original colormap, the fraction it&#39;ll take of the merged colormap.
+                         [0&lt;fr_0&lt;1, ...]
+    :param ranges:    For each original colormap, the range taken.
+                         [(0=&lt;min&lt;1, 0&lt;max&lt;=1)_0, ...]
+
+    :type maps:       list of str
+    :type fractions:  list of float
+    :type ranges:     list of tuple
+
+    :return: mpl.colors.LinearSegmentedColormap
+    &#34;&#34;&#34;
+
+    if isinstance(fractions, type(None)):
+        fractions = np.ones(len(maps))*1/len(maps)
+
+    if isinstance(ranges, type(None)):
+        ranges = np.tile(np.array([0, 1]), (len(maps), 1))
+
+    stack = tuple(mpl.cm.get_cmap(maps[i])(np.linspace(ranges[i][0], ranges[i][1], int(round(256 * fractions[i], 0))))
+                  for i in range(len(maps)))
+
+    colors = np.vstack(stack)
+
+    return mpl.colors.LinearSegmentedColormap.from_list(&#39;custom_RdBu&#39;, colors)</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -199,6 +292,7 @@ string</p></div>
 <ul class="">
 <li><code><a title="mpl_plotter.color.functions.complementary" href="#mpl_plotter.color.functions.complementary">complementary</a></code></li>
 <li><code><a title="mpl_plotter.color.functions.delta" href="#mpl_plotter.color.functions.delta">delta</a></code></li>
+<li><code><a title="mpl_plotter.color.functions.mapstack" href="#mpl_plotter.color.functions.mapstack">mapstack</a></code></li>
 </ul>
 </li>
 </ul>
