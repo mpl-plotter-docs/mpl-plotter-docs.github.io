@@ -36,7 +36,6 @@ Comparison plot method
 &#34;&#34;&#34;
 
 import inspect
-from copy import deepcopy
 
 import numpy as np
 import matplotlib as mpl
@@ -55,15 +54,18 @@ def comparison(x,
     &#34;&#34;&#34;
     # Inputs
     The panes function supports numerical inputs in the following forms:
-    |   x                      |   y                       |  result  |  notes                                          |
-    |  ---                     |  ---                      |  ---     |  ---                                            |
-    |  array                   |  array                    |  11      |                                                 |
-    |  array                   |  [array, array]           |  12      |  Both `y`s share `x`                            |
-    |  array                   |  [[array], [array]]       |  21      |  Both `y`s share `x`                            |
-    |  array                   |  [n*[array], n*[array]]   |  2n      |  All curves in all (2) panes share a single `x` |
-    |  [array, array]          |  [array, array]           |  21      |  Each `y` has an `x`                            |
-    |  [array, array]          |  [n*[array], n*[array]]   |  2n      |  All curves in each pane share an `x`           |
-    |  [n*[array], n*[array]]  |  [n*[array], n*[array]]   |  2n      |  All curves in all (2) panes have their own `x` |
+    |   x                      |   y                       |  result  |  notes               |
+    |  ---                     |  ---                      |  ---     |  ---                 |
+    |  array                   |  array                    |  1       |                      |
+    |  array                   |  [array, array]           |  2       |  Both `y`s share `x` |
+    |  [array, array]          |  [array, array]           |  2       |  Each `y` has an `x` |
+    |  [n*[array]              |  [n*[array]]              |  n       |  Each `y` has an `x` |
+
+    where
+
+    * array:  List or NumPy array with numerical values
+    * [...]:  List containing ...
+    * result: &lt;curves&gt;
 
     # Arguments
     Arguments are internally classified as FIGURE arguments, AXIS arguments, PLURAL arguments
@@ -74,8 +76,6 @@ def comparison(x,
         to avoid conflicts. Ieg: passing `grid=True` twice (`plt.grid(...)`) will result
         in no grid being drawn.
         These are removed from the keyword arguments and used in the last `comparison` call.
-
-    * Axis
 
     * Plural
         Arguments with a keyword equal to any of the arguments which can be passed to the
@@ -97,8 +97,7 @@ def comparison(x,
     :param x:               Domains.
     :param y:               Values.
     :param f:               Functions used to plot y(x)
-    :param kwargs:          MPL Plotter plotting class keyword arguments for
-                            further customization
+    :param kwargs:          MPL Plotter plotting class keyword arguments for further customization
 
     :type x:                list of list or list of np.ndarray
     :type y:                list of list or list of np.ndarray
@@ -111,43 +110,11 @@ def comparison(x,
                 &#39;show&#39;,
                 &#39;legend&#39;,
                 &#39;legend_loc&#39;,
+                &#39;resize_axes&#39;,
+                &#39;grid&#39;
               ]
     fparams = list(set(fig_par) &amp; set(list(kwargs.keys())))             # Intersection of kwarg keys and fig params
     fparams = {k: kwargs.pop(k) for k in fparams}                       # Dictionary of figure parameters
-
-    # Axis arguments
-    ax_par = [                                                          # Get axis specific parameters
-                &#39;resize_axes&#39;,
-                &#39;grid&#39;
-             ]
-    axparams = list(set(ax_par) &amp; set(list(kwargs.keys())))             # Intersection of kwarg keys and fig params
-    axparams = {k: kwargs.pop(k) for k in axparams}                     # Dictionary of figure parameters
-
-    # # Curve parameters
-    # crv_par = [                                                         # Get curve specific parameters
-    #             &#39;color&#39;,
-    #             &#39;line_width&#39;,
-    #             &#39;plot_label&#39;
-    #           ]
-    # cparams = list(set(crv_par) &amp; set(list(kwargs.keys())))             # Intersection of kwarg keys and fig params
-    # cparams = {k: kwargs.pop(k) for k in cparams}                       # Dictionary of figure parameters
-    #
-    # if &#39;color&#39; not in cparams.keys():
-    #     cparams[&#39;color&#39;] = colorscheme_one()
-    #
-    # def cparam(i):
-    #     &#34;&#34;&#34;
-    #     Get curve parameters of the ith curve.
-    #
-    #     :param i: index
-    #     &#34;&#34;&#34;
-    #     cparam = {}
-    #     for k in list(cparams.keys()):
-    #         if isinstance(cparams[k], list):
-    #             cparam[k] = cparams[k][i]
-    #         else:
-    #             cparam[k] = cparams[k]
-    #     return cparam
 
     # Plurals
     params = list(dict(inspect.signature(line).parameters).keys())      # Get line function parameters
@@ -166,10 +133,36 @@ def comparison(x,
         except TypeError:
             print(plurals, i)
 
+    # Curve parameters
+    crv_par = [                                                         # Get curve specific parameters
+                &#39;color&#39;,
+                &#39;line_width&#39;,
+                &#39;plot_label&#39;
+              ]
+    cparams = list(set(crv_par) &amp; set(list(kwargs.keys())))             # Intersection of kwarg keys and fig params
+    cparams = {k: kwargs.pop(k) for k in cparams}                       # Dictionary of figure parameters
+
+    def cparam(i):
+        &#34;&#34;&#34;
+        Get curve parameters of the ith curve.
+
+        :param i: index
+        &#34;&#34;&#34;
+        cparam = {}
+        for k in list(cparams.keys()):
+            if isinstance(cparams[k], list):
+                cparam[k] = cparams[k][i]
+            else:
+                cparam[k] = cparams[k]
+        return cparam
+
     # Plot defaults
     fparams[&#39;backend&#39;]    = fparams.pop(&#39;backend&#39;,    &#39;Qt5Agg&#39;)
     fparams[&#39;legend&#39;]     = fparams.pop(&#39;legend&#39;,     &#39;plot_labels&#39; in plurals.keys() or &#39;plot_label&#39; in kwargs.keys())
     fparams[&#39;legend_loc&#39;] = fparams.pop(&#39;legend_loc&#39;, (0.7, 0.675))
+
+    if &#39;color&#39; not in cparams.keys() and &#39;colors&#39; not in plurals.keys():
+        cparams[&#39;color&#39;] = colorscheme_one()
 
     # Limits
     y_max = max(y[n].max() for n in range(len(y)))
@@ -208,8 +201,7 @@ def comparison(x,
     # Plot
     for n in range(n_curves):
 
-        # args = {**kwargs, **plural(n), **cparam(n)} if n != n_curves - 1 else {**kwargs, **plural(n), **fparams, **axparams, **cparam(n)}
-        args = {**kwargs, **plural(n)} if n != n_curves - 1 else {**kwargs, **plural(n), **fparams, **axparams}
+        args = {**kwargs, **plural(n), **cparam(n)} if n != n_curves - 1 else {**kwargs, **plural(n), **cparam(n), **fparams}
 
         f[n](x=x[n] if not single_x else x,
              y=y[n] if not single_y else y,
@@ -276,7 +268,7 @@ array
 |
 array
 |
-11
+1
 |
 |
 |
@@ -284,53 +276,33 @@ array
 |
 [array, array]
 |
-12
+2
 |
-Both <code>y</code>s share <code>x</code>
-|
-|
-array
-|
-[[array], [array]]
-|
-21
-|
-Both <code>y</code>s share <code>x</code>
-|
-|
-array
-|
-[n<em>[array], n</em>[array]]
-|
-2n
-|
-All curves in all (2) panes share a single <code>x</code> |
+Both <code>y</code>s share <code>x</code> |
 |
 [array, array]
 |
 [array, array]
 |
-21
+2
 |
-Each <code>y</code> has an <code>x</code>
+Each <code>y</code> has an <code>x</code> |
 |
+[n<em>[array]
 |
-[array, array]
+[n</em>[array]]
 |
-[n<em>[array], n</em>[array]]
+n
 |
-2n
-|
-All curves in each pane share an <code>x</code>
-|
-|
-[n<em>[array], n</em>[array]]
-|
-[n<em>[array], n</em>[array]]
-|
-2n
-|
-All curves in all (2) panes have their own <code>x</code> |</p>
+Each <code>y</code> has an <code>x</code> |</p>
+<p>where</p>
+<ul>
+<li>array:
+List or NumPy array with numerical values</li>
+<li>[&hellip;]:
+List containing &hellip;</li>
+<li>result: <curves></li>
+</ul>
 <h1 id="arguments">Arguments</h1>
 <p>Arguments are internally classified as FIGURE arguments, AXIS arguments, PLURAL arguments
 and CURVE arguments, namely:</p>
@@ -341,9 +313,6 @@ Select few arguments which may be input only once in the plotting process, so as
 to avoid conflicts. Ieg: passing <code>grid=True</code> twice (<code>plt.grid(&hellip;)</code>) will result
 in no grid being drawn.
 These are removed from the keyword arguments and used in the last <code><a title="mpl_plotter.two_d.comparison.comparison" href="#mpl_plotter.two_d.comparison.comparison">comparison()</a></code> call.</p>
-</li>
-<li>
-<p>Axis</p>
 </li>
 <li>
 <p>Plural
@@ -370,8 +339,7 @@ Values.
 :param f:
 Functions used to plot y(x)
 :param kwargs:
-MPL Plotter plotting class keyword arguments for
-further customization</p>
+MPL Plotter plotting class keyword arguments for further customization</p>
 <p>:type x:
 list of list or list of np.ndarray
 :type y:
@@ -390,15 +358,18 @@ list of plot</p></div>
     &#34;&#34;&#34;
     # Inputs
     The panes function supports numerical inputs in the following forms:
-    |   x                      |   y                       |  result  |  notes                                          |
-    |  ---                     |  ---                      |  ---     |  ---                                            |
-    |  array                   |  array                    |  11      |                                                 |
-    |  array                   |  [array, array]           |  12      |  Both `y`s share `x`                            |
-    |  array                   |  [[array], [array]]       |  21      |  Both `y`s share `x`                            |
-    |  array                   |  [n*[array], n*[array]]   |  2n      |  All curves in all (2) panes share a single `x` |
-    |  [array, array]          |  [array, array]           |  21      |  Each `y` has an `x`                            |
-    |  [array, array]          |  [n*[array], n*[array]]   |  2n      |  All curves in each pane share an `x`           |
-    |  [n*[array], n*[array]]  |  [n*[array], n*[array]]   |  2n      |  All curves in all (2) panes have their own `x` |
+    |   x                      |   y                       |  result  |  notes               |
+    |  ---                     |  ---                      |  ---     |  ---                 |
+    |  array                   |  array                    |  1       |                      |
+    |  array                   |  [array, array]           |  2       |  Both `y`s share `x` |
+    |  [array, array]          |  [array, array]           |  2       |  Each `y` has an `x` |
+    |  [n*[array]              |  [n*[array]]              |  n       |  Each `y` has an `x` |
+
+    where
+
+    * array:  List or NumPy array with numerical values
+    * [...]:  List containing ...
+    * result: &lt;curves&gt;
 
     # Arguments
     Arguments are internally classified as FIGURE arguments, AXIS arguments, PLURAL arguments
@@ -409,8 +380,6 @@ list of plot</p></div>
         to avoid conflicts. Ieg: passing `grid=True` twice (`plt.grid(...)`) will result
         in no grid being drawn.
         These are removed from the keyword arguments and used in the last `comparison` call.
-
-    * Axis
 
     * Plural
         Arguments with a keyword equal to any of the arguments which can be passed to the
@@ -432,8 +401,7 @@ list of plot</p></div>
     :param x:               Domains.
     :param y:               Values.
     :param f:               Functions used to plot y(x)
-    :param kwargs:          MPL Plotter plotting class keyword arguments for
-                            further customization
+    :param kwargs:          MPL Plotter plotting class keyword arguments for further customization
 
     :type x:                list of list or list of np.ndarray
     :type y:                list of list or list of np.ndarray
@@ -446,43 +414,11 @@ list of plot</p></div>
                 &#39;show&#39;,
                 &#39;legend&#39;,
                 &#39;legend_loc&#39;,
+                &#39;resize_axes&#39;,
+                &#39;grid&#39;
               ]
     fparams = list(set(fig_par) &amp; set(list(kwargs.keys())))             # Intersection of kwarg keys and fig params
     fparams = {k: kwargs.pop(k) for k in fparams}                       # Dictionary of figure parameters
-
-    # Axis arguments
-    ax_par = [                                                          # Get axis specific parameters
-                &#39;resize_axes&#39;,
-                &#39;grid&#39;
-             ]
-    axparams = list(set(ax_par) &amp; set(list(kwargs.keys())))             # Intersection of kwarg keys and fig params
-    axparams = {k: kwargs.pop(k) for k in axparams}                     # Dictionary of figure parameters
-
-    # # Curve parameters
-    # crv_par = [                                                         # Get curve specific parameters
-    #             &#39;color&#39;,
-    #             &#39;line_width&#39;,
-    #             &#39;plot_label&#39;
-    #           ]
-    # cparams = list(set(crv_par) &amp; set(list(kwargs.keys())))             # Intersection of kwarg keys and fig params
-    # cparams = {k: kwargs.pop(k) for k in cparams}                       # Dictionary of figure parameters
-    #
-    # if &#39;color&#39; not in cparams.keys():
-    #     cparams[&#39;color&#39;] = colorscheme_one()
-    #
-    # def cparam(i):
-    #     &#34;&#34;&#34;
-    #     Get curve parameters of the ith curve.
-    #
-    #     :param i: index
-    #     &#34;&#34;&#34;
-    #     cparam = {}
-    #     for k in list(cparams.keys()):
-    #         if isinstance(cparams[k], list):
-    #             cparam[k] = cparams[k][i]
-    #         else:
-    #             cparam[k] = cparams[k]
-    #     return cparam
 
     # Plurals
     params = list(dict(inspect.signature(line).parameters).keys())      # Get line function parameters
@@ -501,10 +437,36 @@ list of plot</p></div>
         except TypeError:
             print(plurals, i)
 
+    # Curve parameters
+    crv_par = [                                                         # Get curve specific parameters
+                &#39;color&#39;,
+                &#39;line_width&#39;,
+                &#39;plot_label&#39;
+              ]
+    cparams = list(set(crv_par) &amp; set(list(kwargs.keys())))             # Intersection of kwarg keys and fig params
+    cparams = {k: kwargs.pop(k) for k in cparams}                       # Dictionary of figure parameters
+
+    def cparam(i):
+        &#34;&#34;&#34;
+        Get curve parameters of the ith curve.
+
+        :param i: index
+        &#34;&#34;&#34;
+        cparam = {}
+        for k in list(cparams.keys()):
+            if isinstance(cparams[k], list):
+                cparam[k] = cparams[k][i]
+            else:
+                cparam[k] = cparams[k]
+        return cparam
+
     # Plot defaults
     fparams[&#39;backend&#39;]    = fparams.pop(&#39;backend&#39;,    &#39;Qt5Agg&#39;)
     fparams[&#39;legend&#39;]     = fparams.pop(&#39;legend&#39;,     &#39;plot_labels&#39; in plurals.keys() or &#39;plot_label&#39; in kwargs.keys())
     fparams[&#39;legend_loc&#39;] = fparams.pop(&#39;legend_loc&#39;, (0.7, 0.675))
+
+    if &#39;color&#39; not in cparams.keys() and &#39;colors&#39; not in plurals.keys():
+        cparams[&#39;color&#39;] = colorscheme_one()
 
     # Limits
     y_max = max(y[n].max() for n in range(len(y)))
@@ -543,8 +505,7 @@ list of plot</p></div>
     # Plot
     for n in range(n_curves):
 
-        # args = {**kwargs, **plural(n), **cparam(n)} if n != n_curves - 1 else {**kwargs, **plural(n), **fparams, **axparams, **cparam(n)}
-        args = {**kwargs, **plural(n)} if n != n_curves - 1 else {**kwargs, **plural(n), **fparams, **axparams}
+        args = {**kwargs, **plural(n), **cparam(n)} if n != n_curves - 1 else {**kwargs, **plural(n), **cparam(n), **fparams}
 
         f[n](x=x[n] if not single_x else x,
              y=y[n] if not single_y else y,
