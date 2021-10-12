@@ -39,6 +39,7 @@ Pane plot method
 import inspect
 import numpy as np
 import matplotlib as mpl
+from math import floor, ceil
 
 from alexandria.paths import home
 
@@ -52,6 +53,7 @@ def panes(x,
           y,
           f=None,
           show=False,
+          rows=1,
           **kwargs):
     &#34;&#34;&#34;
     Panes
@@ -186,13 +188,21 @@ def panes(x,
 
     # Figure setup
     n_plots = len(y) if not single_y else 1
-    fig     = figure((5 * n_plots, 3.5), backend=fparams[&#39;backend&#39;])
+    N = min(n_plots, ceil(n_plots/rows))
+    M = rows
+
+    height = 3.5 if M == 1 else 4
+
+    fig     = figure((5 * N, height * M), backend=fparams[&#39;backend&#39;])
     import matplotlib.pyplot as plt
 
     # Plot
     for n in range(n_plots):
 
-        ax_transient = plt.subplot2grid((1, n_plots), (0, n), rowspan=1, colspan=1)
+        ax_transient = plt.subplot2grid((M, N),
+                                        (n % rows, floor(n/rows)),
+                                        rowspan=1,
+                                        colspan=1)
 
         # Pass keyword arguments to last
         args = {**kwargs, **plural(n), **cparams} if n != n_plots - 1 else {**kwargs, **plural(n), **cparams, **fparams, **sparams}
@@ -226,7 +236,10 @@ def panes(x,
                    )
 
     # Margins
-    plt.subplots_adjust(left=0.1, right=0.85, wspace=0.6, hspace=0.35)
+    plt.subplots_adjust(left=0.1,
+                        right=0.85 if M == 1 else 0.75,
+                        wspace=0.6,
+                        hspace=0.35)
 
     if fparams[&#39;legend&#39;]:
 
@@ -250,7 +263,7 @@ def panes(x,
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="mpl_plotter.two_d.panes.panes"><code class="name flex">
-<span>def <span class="ident">panes</span></span>(<span>x, y, f=None, show=False, **kwargs)</span>
+<span>def <span class="ident">panes</span></span>(<span>x, y, f=None, show=False, rows=1, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><h2 id="panes">Panes</h2>
@@ -417,6 +430,7 @@ any</p></div>
           y,
           f=None,
           show=False,
+          rows=1,
           **kwargs):
     &#34;&#34;&#34;
     Panes
@@ -551,13 +565,21 @@ any</p></div>
 
     # Figure setup
     n_plots = len(y) if not single_y else 1
-    fig     = figure((5 * n_plots, 3.5), backend=fparams[&#39;backend&#39;])
+    N = min(n_plots, ceil(n_plots/rows))
+    M = rows
+
+    height = 3.5 if M == 1 else 4
+
+    fig     = figure((5 * N, height * M), backend=fparams[&#39;backend&#39;])
     import matplotlib.pyplot as plt
 
     # Plot
     for n in range(n_plots):
 
-        ax_transient = plt.subplot2grid((1, n_plots), (0, n), rowspan=1, colspan=1)
+        ax_transient = plt.subplot2grid((M, N),
+                                        (n % rows, floor(n/rows)),
+                                        rowspan=1,
+                                        colspan=1)
 
         # Pass keyword arguments to last
         args = {**kwargs, **plural(n), **cparams} if n != n_plots - 1 else {**kwargs, **plural(n), **cparams, **fparams, **sparams}
@@ -591,7 +613,10 @@ any</p></div>
                    )
 
     # Margins
-    plt.subplots_adjust(left=0.1, right=0.85, wspace=0.6, hspace=0.35)
+    plt.subplots_adjust(left=0.1,
+                        right=0.85 if M == 1 else 0.75,
+                        wspace=0.6,
+                        hspace=0.35)
 
     if fparams[&#39;legend&#39;]:
 
