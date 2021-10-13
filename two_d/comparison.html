@@ -50,6 +50,7 @@ def comparison(x,
                y,
                f=None,
                show=False,
+               autocolor=True,
                **kwargs):
     &#34;&#34;&#34;
     # Inputs
@@ -97,7 +98,9 @@ def comparison(x,
     :param x:               Domains.
     :param y:               Values.
     :param f:               Functions used to plot y(x)
-    :param kwargs:          MPL Plotter plotting class keyword arguments for further customization
+    :param show:            Display plot.
+    :param autocolor:       Assign different colors to the curves if they are not provided.
+    :param kwargs:          MPL Plotter plotting class keyword arguments for further customization.
 
     :type x:                list of list or list of np.ndarray
     :type y:                list of list or list of np.ndarray
@@ -161,7 +164,7 @@ def comparison(x,
     fparams[&#39;legend&#39;]     = fparams.pop(&#39;legend&#39;,     &#39;plot_labels&#39; in plurals.keys() or &#39;plot_label&#39; in kwargs.keys())
     fparams[&#39;legend_loc&#39;] = fparams.pop(&#39;legend_loc&#39;, (0.7, 0.675))
 
-    if &#39;color&#39; not in cparams.keys() and &#39;colors&#39; not in plurals.keys():
+    if &#39;color&#39; not in cparams.keys() and &#39;colors&#39; not in plurals.keys() and autocolor:
         cparams[&#39;color&#39;] = colorscheme_one()
 
     # Limits
@@ -240,7 +243,7 @@ def comparison(x,
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="mpl_plotter.two_d.comparison.comparison"><code class="name flex">
-<span>def <span class="ident">comparison</span></span>(<span>x, y, f=None, show=False, **kwargs)</span>
+<span>def <span class="ident">comparison</span></span>(<span>x, y, f=None, show=False, autocolor=True, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><h1 id="inputs">Inputs</h1>
@@ -338,8 +341,12 @@ Domains.
 Values.
 :param f:
 Functions used to plot y(x)
+:param show:
+Display plot.
+:param autocolor:
+Assign different colors to the curves if they are not provided.
 :param kwargs:
-MPL Plotter plotting class keyword arguments for further customization</p>
+MPL Plotter plotting class keyword arguments for further customization.</p>
 <p>:type x:
 list of list or list of np.ndarray
 :type y:
@@ -354,6 +361,7 @@ list of plot</p></div>
                y,
                f=None,
                show=False,
+               autocolor=True,
                **kwargs):
     &#34;&#34;&#34;
     # Inputs
@@ -401,7 +409,9 @@ list of plot</p></div>
     :param x:               Domains.
     :param y:               Values.
     :param f:               Functions used to plot y(x)
-    :param kwargs:          MPL Plotter plotting class keyword arguments for further customization
+    :param show:            Display plot.
+    :param autocolor:       Assign different colors to the curves if they are not provided.
+    :param kwargs:          MPL Plotter plotting class keyword arguments for further customization.
 
     :type x:                list of list or list of np.ndarray
     :type y:                list of list or list of np.ndarray
@@ -465,7 +475,7 @@ list of plot</p></div>
     fparams[&#39;legend&#39;]     = fparams.pop(&#39;legend&#39;,     &#39;plot_labels&#39; in plurals.keys() or &#39;plot_label&#39; in kwargs.keys())
     fparams[&#39;legend_loc&#39;] = fparams.pop(&#39;legend_loc&#39;, (0.7, 0.675))
 
-    if &#39;color&#39; not in cparams.keys() and &#39;colors&#39; not in plurals.keys():
+    if &#39;color&#39; not in cparams.keys() and &#39;colors&#39; not in plurals.keys() and autocolor:
         cparams[&#39;color&#39;] = colorscheme_one()
 
     # Limits
