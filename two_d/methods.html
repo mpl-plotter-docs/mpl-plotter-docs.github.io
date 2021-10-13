@@ -727,12 +727,11 @@ class line(plot, std_input):
             if self.norm:
                 self.norm = self.y
 
-
 class scatter(plot, std_input):
 
     def __init__(self,
                  # Specifics
-                 x=None, y=None, point_size=5, marker=&#39;o&#39;,
+                 x=None, y=None, point_size=5, marker=&#39;o&#39;, facecolors=None,
                  # Specifics: color
                  color=&#34;C0&#34;, cmap=&#39;RdBu_r&#39;, alpha=None, norm=None,
                  # Backend
@@ -837,12 +836,14 @@ class scatter(plot, std_input):
     def plot(self):
 
         if not isinstance(self.norm, type(None)):
-            self.graph = self.ax.scatter(self.x, self.y, label=self.plot_label, s=self.point_size, marker=self.marker,
+            self.graph = self.ax.scatter(self.x, self.y, label=self.plot_label,
+                                         s=self.point_size, marker=self.marker, facecolors=self.facecolors,
                                          c=self.norm, cmap=self.cmap,
                                          zorder=self.zorder,
                                          alpha=self.alpha)
         else:
-            self.graph = self.ax.scatter(self.x, self.y, label=self.plot_label, s=self.point_size, marker=self.marker,
+            self.graph = self.ax.scatter(self.x, self.y, label=self.plot_label,
+                                         s=self.point_size, marker=self.marker, facecolors=self.facecolors,
                                          color=self.color,
                                          zorder=self.zorder,
                                          alpha=self.alpha)
@@ -3915,7 +3916,7 @@ backend=None</p></div>
 </dd>
 <dt id="mpl_plotter.two_d.methods.scatter"><code class="flex name class">
 <span>class <span class="ident">scatter</span></span>
-<span>(</span><span>x=None, y=None, point_size=5, marker='o', color='C0', cmap='RdBu_r', alpha=None, norm=None, backend='Qt5Agg', font='serif', math_font='dejavuserif', font_color='black', font_size_increase=0, fig=None, ax=None, figsize=None, shape_and_position=111, prune=None, resize_axes=True, scale=None, aspect=None, workspace_color=None, workspace_color2=None, background_color_figure='white', background_color_plot='white', background_alpha=1, style=None, light=None, dark=None, spine_color=None, spines_removed=(0, 0, 1, 1), x_upper_bound=None, x_lower_bound=None, y_upper_bound=None, y_lower_bound=None, x_bounds=None, y_bounds=None, demo_pad_plot=False, x_upper_resize_pad=0, x_lower_resize_pad=0, y_upper_resize_pad=0, y_lower_resize_pad=0, grid=True, grid_color='lightgrey', grid_lines='-.', title=None, title_size=12, title_y=1.025, title_weight=None, title_font=None, title_color=None, x_label=None, x_label_size=12, x_label_pad=10, x_label_rotation=None, x_label_weight=None, y_label=None, y_label_size=12, y_label_pad=10, y_label_rotation=None, y_label_weight=None, x_tick_number=5, y_tick_number=5, x_label_coords=None, y_label_coords=None, tick_color=None, tick_label_pad=5, ticks_where=(1, 1, 0, 0), tick_label_size=10, x_tick_label_size=None, y_tick_label_size=None, x_custom_tick_locations=None, y_custom_tick_locations=None, fine_tick_locations=True, x_custom_tick_labels=None, y_custom_tick_labels=None, x_date_tick_labels=False, date_format='%Y-%m-%d', tick_ndecimals=1, x_tick_ndecimals=None, y_tick_ndecimals=None, x_tick_rotation=None, y_tick_rotation=None, tick_labels_where=(1, 1, 0, 0), color_bar=False, cb_pad=0.2, cb_axis_labelpad=10, shrink=0.75, extend='neither', cb_title=None, cb_orientation='vertical', cb_title_rotation=None, cb_title_style='normal', cb_title_size=10, cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False, cb_top_title_pad=None, x_cb_top_title=0, cb_vmin=None, cb_vmax=None, cb_hard_bounds=False, cb_outline_width=None, cb_tick_number=5, cb_ticklabelsize=10, cb_tick_ndecimals=None, plot_label=None, legend=False, legend_loc='upper right', legend_bbox_to_anchor=None, legend_size=13, legend_weight='normal', legend_style='normal', legend_handleheight=None, legend_ncol=1, show=False, zorder=None, filename=None, dpi=None, suppress=True)</span>
+<span>(</span><span>x=None, y=None, point_size=5, marker='o', facecolors=None, color='C0', cmap='RdBu_r', alpha=None, norm=None, backend='Qt5Agg', font='serif', math_font='dejavuserif', font_color='black', font_size_increase=0, fig=None, ax=None, figsize=None, shape_and_position=111, prune=None, resize_axes=True, scale=None, aspect=None, workspace_color=None, workspace_color2=None, background_color_figure='white', background_color_plot='white', background_alpha=1, style=None, light=None, dark=None, spine_color=None, spines_removed=(0, 0, 1, 1), x_upper_bound=None, x_lower_bound=None, y_upper_bound=None, y_lower_bound=None, x_bounds=None, y_bounds=None, demo_pad_plot=False, x_upper_resize_pad=0, x_lower_resize_pad=0, y_upper_resize_pad=0, y_lower_resize_pad=0, grid=True, grid_color='lightgrey', grid_lines='-.', title=None, title_size=12, title_y=1.025, title_weight=None, title_font=None, title_color=None, x_label=None, x_label_size=12, x_label_pad=10, x_label_rotation=None, x_label_weight=None, y_label=None, y_label_size=12, y_label_pad=10, y_label_rotation=None, y_label_weight=None, x_tick_number=5, y_tick_number=5, x_label_coords=None, y_label_coords=None, tick_color=None, tick_label_pad=5, ticks_where=(1, 1, 0, 0), tick_label_size=10, x_tick_label_size=None, y_tick_label_size=None, x_custom_tick_locations=None, y_custom_tick_locations=None, fine_tick_locations=True, x_custom_tick_labels=None, y_custom_tick_labels=None, x_date_tick_labels=False, date_format='%Y-%m-%d', tick_ndecimals=1, x_tick_ndecimals=None, y_tick_ndecimals=None, x_tick_rotation=None, y_tick_rotation=None, tick_labels_where=(1, 1, 0, 0), color_bar=False, cb_pad=0.2, cb_axis_labelpad=10, shrink=0.75, extend='neither', cb_title=None, cb_orientation='vertical', cb_title_rotation=None, cb_title_style='normal', cb_title_size=10, cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False, cb_top_title_pad=None, x_cb_top_title=0, cb_vmin=None, cb_vmax=None, cb_hard_bounds=False, cb_outline_width=None, cb_tick_number=5, cb_ticklabelsize=10, cb_tick_ndecimals=None, plot_label=None, legend=False, legend_loc='upper right', legend_bbox_to_anchor=None, legend_size=13, legend_weight='normal', legend_style='normal', legend_handleheight=None, legend_ncol=1, show=False, zorder=None, filename=None, dpi=None, suppress=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Scatter plot class
@@ -3947,7 +3948,7 @@ backend=None</p></div>
 
     def __init__(self,
                  # Specifics
-                 x=None, y=None, point_size=5, marker=&#39;o&#39;,
+                 x=None, y=None, point_size=5, marker=&#39;o&#39;, facecolors=None,
                  # Specifics: color
                  color=&#34;C0&#34;, cmap=&#39;RdBu_r&#39;, alpha=None, norm=None,
                  # Backend
@@ -4052,12 +4053,14 @@ backend=None</p></div>
     def plot(self):
 
         if not isinstance(self.norm, type(None)):
-            self.graph = self.ax.scatter(self.x, self.y, label=self.plot_label, s=self.point_size, marker=self.marker,
+            self.graph = self.ax.scatter(self.x, self.y, label=self.plot_label,
+                                         s=self.point_size, marker=self.marker, facecolors=self.facecolors,
                                          c=self.norm, cmap=self.cmap,
                                          zorder=self.zorder,
                                          alpha=self.alpha)
         else:
-            self.graph = self.ax.scatter(self.x, self.y, label=self.plot_label, s=self.point_size, marker=self.marker,
+            self.graph = self.ax.scatter(self.x, self.y, label=self.plot_label,
+                                         s=self.point_size, marker=self.marker, facecolors=self.facecolors,
                                          color=self.color,
                                          zorder=self.zorder,
                                          alpha=self.alpha)
@@ -4107,12 +4110,14 @@ backend=None</p></div>
 <pre><code class="python">def plot(self):
 
     if not isinstance(self.norm, type(None)):
-        self.graph = self.ax.scatter(self.x, self.y, label=self.plot_label, s=self.point_size, marker=self.marker,
+        self.graph = self.ax.scatter(self.x, self.y, label=self.plot_label,
+                                     s=self.point_size, marker=self.marker, facecolors=self.facecolors,
                                      c=self.norm, cmap=self.cmap,
                                      zorder=self.zorder,
                                      alpha=self.alpha)
     else:
-        self.graph = self.ax.scatter(self.x, self.y, label=self.plot_label, s=self.point_size, marker=self.marker,
+        self.graph = self.ax.scatter(self.x, self.y, label=self.plot_label,
+                                     s=self.point_size, marker=self.marker, facecolors=self.facecolors,
                                      color=self.color,
                                      zorder=self.zorder,
                                      alpha=self.alpha)</code></pre>
