@@ -165,6 +165,58 @@ def get_available_fonts():
         print(numeral+&#39;&#34;&#39;+names[i]+&#39;&#34;&#39;)
 
 
+# SPDX-FileCopyrightText: © 2021 Antonio López Rivera &lt;antonlopezr99@gmail.com&gt;
+# SPDX-License-Identifier: GPL-3.0-only
+
+&#34;&#34;&#34;
+Huracan utilities
+-----------------
+&#34;&#34;&#34;
+
+import re
+import sys
+import inspect
+
+
+def setattr_namespace(o, namespace):
+    &#34;&#34;&#34;
+    Set all variables declared in a namespace as as attributes
+    of a class instance.
+    ---
+
+    1. Obtain list of module names
+    2. Get namespace variables
+       - Discard all variables with names starting and ending with &#39;_&#39;
+    3. Create a dictionary of namespace variable names and values
+    4. Set namespace variables as attributes of the input object
+       - Given class instance _o_ will not set as attribute of itself
+       - The parent class of _o_ will not be set as an attribute of _o_
+         if present in the provided namespace.
+
+    :param o: Instance of any given class.
+    :param namespace: A given namespace.
+                      - locals()
+                      - globals()
+
+    :type o: object
+    :type namespace: dict
+    &#34;&#34;&#34;
+    # List of module names
+    _mods_ = list(set(sys.modules) &amp; set(namespace))
+    # List of function arguments
+    _args_ = setattr_namespace.__code__.co_varnames
+    # Get namespace variables:
+    #    List of local variables which are not special variables nor module names
+    keys = [key for key in namespace.keys() if (key[0] != &#39;_&#39; and key[-1] != &#39;_&#39;) and key not in _mods_]
+    # Dictionary of namespace variable names and values
+    vars = {key: namespace[key] for key in keys}
+    for key, value in vars.items():
+        if not type(value) == type(o)\
+                and not isinstance(o, value if inspect.isclass(value) else type(value)):  # Avoid _o_, parent of _o_
+            # Set namespace variables as attributes of the input object
+            setattr(o, key, value)
+
+
 class markers:
     &#34;&#34;&#34;
     Markers class
@@ -210,6 +262,9 @@ class markers:
     # Garbage tier
     pixel           = &#34;,&#34;
 
+    # Icompatible
+    incompatible    = [x]
+
     def __init__(self, hollow=False, plotter=&#39;plot&#39;):
         self.hollow  = hollow
         self.plotter = plotter
@@ -220,8 +275,10 @@ class markers:
     def __getitem__(self, item):
 
         special = r&#39;^__(.*?)\__$&#39;
-        keys    = [k for k in markers.__dict__.keys() if not re.match(special, k)]
-        marker  = {&#39;marker&#39;: markers.__dict__[keys[item]]}
+
+        m       = {k: markers.__dict__[k] for k in markers.__dict__.keys() if (self.hollow and k not in self.incompatible) or not self.hollow}
+        keys    = [k for k in m.keys() if not re.match(special, k)]
+        marker  = {&#39;marker&#39;: m[keys[item]]}
 
         if self.hollow:
             if self.plotter == &#39;scatter&#39;:
@@ -325,6 +382,72 @@ Pyplot.</p>
         print(numeral+&#39;&#34;&#39;+names[i]+&#39;&#34;&#39;)</code></pre>
 </details>
 </dd>
+<dt id="mpl_plotter.setattr_namespace"><code class="name flex">
+<span>def <span class="ident">setattr_namespace</span></span>(<span>o, namespace)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set all variables declared in a namespace as as attributes
+of a class instance.</p>
+<hr>
+<ol>
+<li>Obtain list of module names</li>
+<li>Get namespace variables</li>
+<li>Discard all variables with names starting and ending with '_'</li>
+<li>Create a dictionary of namespace variable names and values</li>
+<li>Set namespace variables as attributes of the input object</li>
+<li>Given class instance <em>o</em> will not set as attribute of itself</li>
+<li>The parent class of <em>o</em> will not be set as an attribute of <em>o</em>
+if present in the provided namespace.</li>
+</ol>
+<p>:param o: Instance of any given class.
+:param namespace: A given namespace.
+- locals()
+- globals()</p>
+<p>:type o: object
+:type namespace: dict</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def setattr_namespace(o, namespace):
+    &#34;&#34;&#34;
+    Set all variables declared in a namespace as as attributes
+    of a class instance.
+    ---
+
+    1. Obtain list of module names
+    2. Get namespace variables
+       - Discard all variables with names starting and ending with &#39;_&#39;
+    3. Create a dictionary of namespace variable names and values
+    4. Set namespace variables as attributes of the input object
+       - Given class instance _o_ will not set as attribute of itself
+       - The parent class of _o_ will not be set as an attribute of _o_
+         if present in the provided namespace.
+
+    :param o: Instance of any given class.
+    :param namespace: A given namespace.
+                      - locals()
+                      - globals()
+
+    :type o: object
+    :type namespace: dict
+    &#34;&#34;&#34;
+    # List of module names
+    _mods_ = list(set(sys.modules) &amp; set(namespace))
+    # List of function arguments
+    _args_ = setattr_namespace.__code__.co_varnames
+    # Get namespace variables:
+    #    List of local variables which are not special variables nor module names
+    keys = [key for key in namespace.keys() if (key[0] != &#39;_&#39; and key[-1] != &#39;_&#39;) and key not in _mods_]
+    # Dictionary of namespace variable names and values
+    vars = {key: namespace[key] for key in keys}
+    for key, value in vars.items():
+        if not type(value) == type(o)\
+                and not isinstance(o, value if inspect.isclass(value) else type(value)):  # Avoid _o_, parent of _o_
+            # Set namespace variables as attributes of the input object
+            setattr(o, key, value)</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -385,6 +508,9 @@ Pyplot.</p>
     # Garbage tier
     pixel           = &#34;,&#34;
 
+    # Icompatible
+    incompatible    = [x]
+
     def __init__(self, hollow=False, plotter=&#39;plot&#39;):
         self.hollow  = hollow
         self.plotter = plotter
@@ -395,8 +521,10 @@ Pyplot.</p>
     def __getitem__(self, item):
 
         special = r&#39;^__(.*?)\__$&#39;
-        keys    = [k for k in markers.__dict__.keys() if not re.match(special, k)]
-        marker  = {&#39;marker&#39;: markers.__dict__[keys[item]]}
+
+        m       = {k: markers.__dict__[k] for k in markers.__dict__.keys() if (self.hollow and k not in self.incompatible) or not self.hollow}
+        keys    = [k for k in m.keys() if not re.match(special, k)]
+        marker  = {&#39;marker&#39;: m[keys[item]]}
 
         if self.hollow:
             if self.plotter == &#39;scatter&#39;:
@@ -457,6 +585,10 @@ Pyplot.</p>
 <div class="desc"></div>
 </dd>
 <dt id="mpl_plotter.markers.hline"><code class="name">var <span class="ident">hline</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="mpl_plotter.markers.incompatible"><code class="name">var <span class="ident">incompatible</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -580,6 +712,7 @@ Pyplot.</p>
 <ul class="">
 <li><code><a title="mpl_plotter.figure" href="#mpl_plotter.figure">figure</a></code></li>
 <li><code><a title="mpl_plotter.get_available_fonts" href="#mpl_plotter.get_available_fonts">get_available_fonts</a></code></li>
+<li><code><a title="mpl_plotter.setattr_namespace" href="#mpl_plotter.setattr_namespace">setattr_namespace</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
@@ -600,6 +733,7 @@ Pyplot.</p>
 <li><code><a title="mpl_plotter.markers.hexagon1" href="#mpl_plotter.markers.hexagon1">hexagon1</a></code></li>
 <li><code><a title="mpl_plotter.markers.hexagon2" href="#mpl_plotter.markers.hexagon2">hexagon2</a></code></li>
 <li><code><a title="mpl_plotter.markers.hline" href="#mpl_plotter.markers.hline">hline</a></code></li>
+<li><code><a title="mpl_plotter.markers.incompatible" href="#mpl_plotter.markers.incompatible">incompatible</a></code></li>
 <li><code><a title="mpl_plotter.markers.octagon" href="#mpl_plotter.markers.octagon">octagon</a></code></li>
 <li><code><a title="mpl_plotter.markers.pentagon" href="#mpl_plotter.markers.pentagon">pentagon</a></code></li>
 <li><code><a title="mpl_plotter.markers.pixel" href="#mpl_plotter.markers.pixel">pixel</a></code></li>
