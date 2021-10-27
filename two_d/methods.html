@@ -527,10 +527,6 @@ class plot(canvas, attributes):
 
     def run(self):
         self.main()
-        try:
-            self.custom()
-        except AttributeError:
-            pass
         self.finish()
 
     def main(self):
@@ -543,14 +539,17 @@ class plot(canvas, attributes):
 
         # Mock plot
         self.mock()
-
         # Plot
         self.plot()
 
+    def finish(self):
+        # Resize axes
+        self.method_resize_axes()
+        # Legend
+        self.method_legend()
         # Colorbar
         self.method_cb()
 
-    def finish(self):
         # Makeup
         self.method_title()
         self.method_axis_labels()
@@ -575,45 +574,7 @@ class plot(canvas, attributes):
                 print(&#39;Ready for next subplot&#39;)
 
 
-class std_input():
-
-    def custom(self):
-        # Resize axes
-        self.method_resize_axes()
-        # Legend
-        self.method_legend()
-
-
-class df_input:
-
-    def method_resize_axes_dataframe(self):
-        if self.resize_axes:
-            xmin = 0
-            ymin = 0
-            xmax = self.z.shape[0]
-            ymax = self.z.shape[1]
-            if isinstance(self.x_upper_bound, type(None)):
-                self.x_upper_bound = xmax
-            if isinstance(self.x_lower_bound, type(None)):
-                self.x_lower_bound = xmin
-            if isinstance(self.y_upper_bound, type(None)):
-                self.y_upper_bound = ymax
-            if isinstance(self.y_lower_bound, type(None)):
-                self.y_lower_bound = ymin
-
-            if not isinstance(self.scale, type(None)):
-                self.ax.set_aspect(self.scale)
-
-            if not isinstance(self.aspect, type(None)):
-                y_range = abs(ymax) + abs(ymin)
-                x_range = abs(xmax) + abs(xmin)
-
-                aspect = x_range/y_range * self.aspect
-
-                self.ax.set_aspect(aspect)
-
-
-class line(plot, std_input):
+class line(plot):
 
     def __init__(self,
                  # Specifics
@@ -626,7 +587,7 @@ class line(plot, std_input):
                  font=&#39;serif&#39;, math_font=&#34;dejavuserif&#34;, font_color=&#34;black&#34;, font_size_increase=0,
                  # Figure, axes
                  fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True,
-                 scale=None, aspect=None,
+                 scale=None, aspect=1,
                  # Setup
                  workspace_color=None, workspace_color2=None,
                  background_color_figure=&#39;white&#39;, background_color_plot=&#39;white&#39;, background_alpha=1,
@@ -750,7 +711,8 @@ class line(plot, std_input):
             if self.norm:
                 self.norm = self.y
 
-class scatter(plot, std_input):
+
+class scatter(plot):
 
     def __init__(self,
                  # Specifics
@@ -763,7 +725,7 @@ class scatter(plot, std_input):
                  font=&#39;serif&#39;, math_font=&#34;dejavuserif&#34;, font_color=&#34;black&#34;, font_size_increase=0,
                  # Figure, axes
                  fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True,
-                 scale=None, aspect=None,
+                 scale=None, aspect=1,
                  # Setup
                  workspace_color=None, workspace_color2=None,
                  background_color_figure=&#39;white&#39;, background_color_plot=&#39;white&#39;, background_alpha=1,
@@ -877,7 +839,7 @@ class scatter(plot, std_input):
             self.norm = self.y
 
 
-class heatmap(plot, df_input):
+class heatmap(plot):
 
     def __init__(self,
                  # Specifics
@@ -890,7 +852,7 @@ class heatmap(plot, df_input):
                  font=&#39;serif&#39;, math_font=&#34;dejavuserif&#34;, font_color=&#34;black&#34;, font_size_increase=0,
                  # Figure, axes
                  fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True,
-                 scale=None, aspect=None,
+                 scale=None, aspect=1,
                  # Setup
                  workspace_color=None, workspace_color2=None,
                  background_color_figure=&#39;white&#39;, background_color_plot=&#39;white&#39;, background_alpha=1,
@@ -985,30 +947,21 @@ class heatmap(plot, df_input):
         self.init()
 
     def plot(self):
-
-        if not isinstance(self.x, type(None)) and not isinstance(self.y, type(None)):
-            self.graph = self.ax.pcolormesh(self.x, self.y, self.z, cmap=self.cmap,
-                                            zorder=self.zorder,
-                                            alpha=self.alpha,
-                                            label=self.plot_label,
-                                            )
-            # Resize axes
-            self.method_resize_axes()
-
-        else:
-            self.graph = self.ax.pcolormesh(self.z, cmap=self.cmap, norm=self.norm,
-                                            zorder=self.zorder,
-                                            alpha=self.alpha,
-                                            label=self.plot_label, )
-            # Resize axes
-            self.method_resize_axes_dataframe()
+        self.graph = self.ax.pcolormesh(self.x, self.y, self.z, cmap=self.cmap,
+                                        zorder=self.zorder,
+                                        alpha=self.alpha,
+                                        label=self.plot_label,
+                                        shading=&#39;auto&#39;
+                                        )
+        # Resize axes
+        self.method_resize_axes()
 
     def mock(self):
         if isinstance(self.x, type(None)) and isinstance(self.y, type(None)):
-            self.z = MockData().waterdropdf()
+            self.x, self.y, self.z = MockData().waterdrop()
 
 
-class quiver(plot, std_input):
+class quiver(plot):
 
     def __init__(self,
                  # Specifics
@@ -1022,7 +975,7 @@ class quiver(plot, std_input):
                  font=&#39;serif&#39;, math_font=&#34;dejavuserif&#34;, font_color=&#34;black&#34;, font_size_increase=0,
                  # Figure, axes
                  fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True,
-                 scale=None, aspect=None,
+                 scale=None, aspect=1,
                  # Setup
                  workspace_color=None, workspace_color2=None,
                  background_color_figure=&#39;white&#39;, background_color_plot=&#39;white&#39;, background_alpha=1,
@@ -1164,7 +1117,7 @@ class quiver(plot, std_input):
         self.color = cmap(c)
 
 
-class streamline(plot, std_input):
+class streamline(plot):
 
     def __init__(self,
                  # Specifics
@@ -1177,7 +1130,7 @@ class streamline(plot, std_input):
                  font=&#39;serif&#39;, math_font=&#34;dejavuserif&#34;, font_color=&#34;black&#34;, font_size_increase=0,
                  # Figure, axes
                  fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True,
-                 scale=None, aspect=None,
+                 scale=None, aspect=1,
                  # Setup
                  workspace_color=None, workspace_color2=None,
                  background_color_figure=&#39;white&#39;, background_color_plot=&#39;white&#39;, background_alpha=1,
@@ -1304,7 +1257,7 @@ class streamline(plot, std_input):
             self.color = rule_color(self.u)
 
 
-class fill_area(plot, std_input):
+class fill_area(plot):
 
     def __init__(self,
                  # Specifics
@@ -1317,7 +1270,7 @@ class fill_area(plot, std_input):
                  font=&#39;serif&#39;, math_font=&#34;dejavuserif&#34;, font_color=&#34;black&#34;, font_size_increase=0,
                  # Figure, axes
                  fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True,
-                 scale=None, aspect=None,
+                 scale=None, aspect=1,
                  # Setup
                  workspace_color=None, workspace_color2=None,
                  background_color_figure=&#39;white&#39;, background_color_plot=&#39;white&#39;, background_alpha=1,
@@ -1460,10 +1413,10 @@ class fill_area(plot, std_input):
             self.x = np.arange(-6, 6, .01)
             self.y = MockData().boltzman(self.x, 0, 1)
             self.z = 1 - MockData().boltzman(self.x, 0.5, 1)
-            line(fig=self.fig, ax=self.ax, x=self.x, y=self.y, color=&#39;darkred&#39;, line_width=2, grid=not self.grid,
-                 plot_label=None, backend=self.backend)
-            line(fig=self.fig, ax=self.ax, x=self.x, y=self.z, color=&#39;darkred&#39;, line_width=2, grid=not self.grid,
-                 plot_label=None, backend=self.backend)
+            line(x=self.x, y=self.y,
+                 grid=False, resize_axes=False)
+            line(x=self.x, y=self.z,
+                 grid=False, resize_axes=False)
             self.below = True
 
 
@@ -2603,90 +2556,9 @@ plt.rcParams['<category>.<item>'] = &lt;&gt;</li>
 </dd>
 </dl>
 </dd>
-<dt id="mpl_plotter.two_d.methods.df_input"><code class="flex name class">
-<span>class <span class="ident">df_input</span></span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class df_input:
-
-    def method_resize_axes_dataframe(self):
-        if self.resize_axes:
-            xmin = 0
-            ymin = 0
-            xmax = self.z.shape[0]
-            ymax = self.z.shape[1]
-            if isinstance(self.x_upper_bound, type(None)):
-                self.x_upper_bound = xmax
-            if isinstance(self.x_lower_bound, type(None)):
-                self.x_lower_bound = xmin
-            if isinstance(self.y_upper_bound, type(None)):
-                self.y_upper_bound = ymax
-            if isinstance(self.y_lower_bound, type(None)):
-                self.y_lower_bound = ymin
-
-            if not isinstance(self.scale, type(None)):
-                self.ax.set_aspect(self.scale)
-
-            if not isinstance(self.aspect, type(None)):
-                y_range = abs(ymax) + abs(ymin)
-                x_range = abs(xmax) + abs(xmin)
-
-                aspect = x_range/y_range * self.aspect
-
-                self.ax.set_aspect(aspect)</code></pre>
-</details>
-<h3>Subclasses</h3>
-<ul class="hlist">
-<li><a title="mpl_plotter.two_d.methods.heatmap" href="#mpl_plotter.two_d.methods.heatmap">heatmap</a></li>
-</ul>
-<h3>Methods</h3>
-<dl>
-<dt id="mpl_plotter.two_d.methods.df_input.method_resize_axes_dataframe"><code class="name flex">
-<span>def <span class="ident">method_resize_axes_dataframe</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def method_resize_axes_dataframe(self):
-    if self.resize_axes:
-        xmin = 0
-        ymin = 0
-        xmax = self.z.shape[0]
-        ymax = self.z.shape[1]
-        if isinstance(self.x_upper_bound, type(None)):
-            self.x_upper_bound = xmax
-        if isinstance(self.x_lower_bound, type(None)):
-            self.x_lower_bound = xmin
-        if isinstance(self.y_upper_bound, type(None)):
-            self.y_upper_bound = ymax
-        if isinstance(self.y_lower_bound, type(None)):
-            self.y_lower_bound = ymin
-
-        if not isinstance(self.scale, type(None)):
-            self.ax.set_aspect(self.scale)
-
-        if not isinstance(self.aspect, type(None)):
-            y_range = abs(ymax) + abs(ymin)
-            x_range = abs(xmax) + abs(xmin)
-
-            aspect = x_range/y_range * self.aspect
-
-            self.ax.set_aspect(aspect)</code></pre>
-</details>
-</dd>
-</dl>
-</dd>
 <dt id="mpl_plotter.two_d.methods.fill_area"><code class="flex name class">
 <span>class <span class="ident">fill_area</span></span>
-<span>(</span><span>x=None, y=None, z=None, between=False, below=False, above=False, color=None, cmap='RdBu_r', alpha=None, norm=None, backend='Qt5Agg', font='serif', math_font='dejavuserif', font_color='black', font_size_increase=0, fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True, scale=None, aspect=None, workspace_color=None, workspace_color2=None, background_color_figure='white', background_color_plot='white', background_alpha=1, style=None, light=None, dark=None, spine_color=None, spines_removed=(0, 0, 1, 1), x_upper_bound=None, x_lower_bound=None, y_upper_bound=None, y_lower_bound=None, x_bounds=None, y_bounds=None, demo_pad_plot=False, x_upper_resize_pad=0, x_lower_resize_pad=0, y_upper_resize_pad=0, y_lower_resize_pad=0, grid=True, grid_color='lightgrey', grid_lines='-.', title=None, title_size=12, title_y=1.025, title_weight=None, title_font=None, title_color=None, x_label=None, x_label_size=12, x_label_pad=10, x_label_rotation=None, x_label_weight=None, y_label=None, y_label_size=12, y_label_pad=10, y_label_rotation=None, y_label_weight=None, x_tick_number=5, y_tick_number=5, x_label_coords=None, y_label_coords=None, tick_color=None, tick_label_pad=5, ticks_where=(1, 1, 0, 0), tick_label_size=10, x_tick_label_size=None, y_tick_label_size=None, x_custom_tick_locations=None, y_custom_tick_locations=None, fine_tick_locations=True, x_custom_tick_labels=None, y_custom_tick_labels=None, x_date_tick_labels=False, date_format='%Y-%m-%d', tick_ndecimals=1, x_tick_ndecimals=None, y_tick_ndecimals=None, x_tick_rotation=None, y_tick_rotation=None, tick_labels_where=(1, 1, 0, 0), color_bar=False, cb_pad=0.2, cb_axis_labelpad=10, shrink=0.75, extend='neither', cb_title=None, cb_orientation='vertical', cb_title_rotation=None, cb_title_style='normal', cb_title_size=10, cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False, cb_top_title_pad=None, x_cb_top_title=0, cb_vmin=None, cb_vmax=None, cb_hard_bounds=False, cb_outline_width=None, cb_tick_number=5, cb_ticklabelsize=10, cb_tick_ndecimals=None, plot_label=None, legend=False, legend_loc='upper right', legend_bbox_to_anchor=None, legend_size=13, legend_weight='normal', legend_style='normal', legend_handleheight=None, legend_ncol=1, show=False, zorder=None, filename=None, dpi=None, suppress=True)</span>
+<span>(</span><span>x=None, y=None, z=None, between=False, below=False, above=False, color=None, cmap='RdBu_r', alpha=None, norm=None, backend='Qt5Agg', font='serif', math_font='dejavuserif', font_color='black', font_size_increase=0, fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True, scale=None, aspect=1, workspace_color=None, workspace_color2=None, background_color_figure='white', background_color_plot='white', background_alpha=1, style=None, light=None, dark=None, spine_color=None, spines_removed=(0, 0, 1, 1), x_upper_bound=None, x_lower_bound=None, y_upper_bound=None, y_lower_bound=None, x_bounds=None, y_bounds=None, demo_pad_plot=False, x_upper_resize_pad=0, x_lower_resize_pad=0, y_upper_resize_pad=0, y_lower_resize_pad=0, grid=True, grid_color='lightgrey', grid_lines='-.', title=None, title_size=12, title_y=1.025, title_weight=None, title_font=None, title_color=None, x_label=None, x_label_size=12, x_label_pad=10, x_label_rotation=None, x_label_weight=None, y_label=None, y_label_size=12, y_label_pad=10, y_label_rotation=None, y_label_weight=None, x_tick_number=5, y_tick_number=5, x_label_coords=None, y_label_coords=None, tick_color=None, tick_label_pad=5, ticks_where=(1, 1, 0, 0), tick_label_size=10, x_tick_label_size=None, y_tick_label_size=None, x_custom_tick_locations=None, y_custom_tick_locations=None, fine_tick_locations=True, x_custom_tick_labels=None, y_custom_tick_labels=None, x_date_tick_labels=False, date_format='%Y-%m-%d', tick_ndecimals=1, x_tick_ndecimals=None, y_tick_ndecimals=None, x_tick_rotation=None, y_tick_rotation=None, tick_labels_where=(1, 1, 0, 0), color_bar=False, cb_pad=0.2, cb_axis_labelpad=10, shrink=0.75, extend='neither', cb_title=None, cb_orientation='vertical', cb_title_rotation=None, cb_title_style='normal', cb_title_size=10, cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False, cb_top_title_pad=None, x_cb_top_title=0, cb_vmin=None, cb_vmax=None, cb_hard_bounds=False, cb_outline_width=None, cb_tick_number=5, cb_ticklabelsize=10, cb_tick_ndecimals=None, plot_label=None, legend=False, legend_loc='upper right', legend_bbox_to_anchor=None, legend_size=13, legend_weight='normal', legend_style='normal', legend_handleheight=None, legend_ncol=1, show=False, zorder=None, filename=None, dpi=None, suppress=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Fill area class
@@ -2717,7 +2589,7 @@ backend=None</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class fill_area(plot, std_input):
+<pre><code class="python">class fill_area(plot):
 
     def __init__(self,
                  # Specifics
@@ -2730,7 +2602,7 @@ backend=None</p></div>
                  font=&#39;serif&#39;, math_font=&#34;dejavuserif&#34;, font_color=&#34;black&#34;, font_size_increase=0,
                  # Figure, axes
                  fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True,
-                 scale=None, aspect=None,
+                 scale=None, aspect=1,
                  # Setup
                  workspace_color=None, workspace_color2=None,
                  background_color_figure=&#39;white&#39;, background_color_plot=&#39;white&#39;, background_alpha=1,
@@ -2873,10 +2745,10 @@ backend=None</p></div>
             self.x = np.arange(-6, 6, .01)
             self.y = MockData().boltzman(self.x, 0, 1)
             self.z = 1 - MockData().boltzman(self.x, 0.5, 1)
-            line(fig=self.fig, ax=self.ax, x=self.x, y=self.y, color=&#39;darkred&#39;, line_width=2, grid=not self.grid,
-                 plot_label=None, backend=self.backend)
-            line(fig=self.fig, ax=self.ax, x=self.x, y=self.z, color=&#39;darkred&#39;, line_width=2, grid=not self.grid,
-                 plot_label=None, backend=self.backend)
+            line(x=self.x, y=self.y,
+                 grid=False, resize_axes=False)
+            line(x=self.x, y=self.z,
+                 grid=False, resize_axes=False)
             self.below = True</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -2884,7 +2756,6 @@ backend=None</p></div>
 <li><a title="mpl_plotter.two_d.methods.plot" href="#mpl_plotter.two_d.methods.plot">plot</a></li>
 <li><a title="mpl_plotter.two_d.methods.canvas" href="#mpl_plotter.two_d.methods.canvas">canvas</a></li>
 <li><a title="mpl_plotter.two_d.methods.attributes" href="#mpl_plotter.two_d.methods.attributes">attributes</a></li>
-<li><a title="mpl_plotter.two_d.methods.std_input" href="#mpl_plotter.two_d.methods.std_input">std_input</a></li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -2953,10 +2824,10 @@ backend=None</p></div>
         self.x = np.arange(-6, 6, .01)
         self.y = MockData().boltzman(self.x, 0, 1)
         self.z = 1 - MockData().boltzman(self.x, 0.5, 1)
-        line(fig=self.fig, ax=self.ax, x=self.x, y=self.y, color=&#39;darkred&#39;, line_width=2, grid=not self.grid,
-             plot_label=None, backend=self.backend)
-        line(fig=self.fig, ax=self.ax, x=self.x, y=self.z, color=&#39;darkred&#39;, line_width=2, grid=not self.grid,
-             plot_label=None, backend=self.backend)
+        line(x=self.x, y=self.y,
+             grid=False, resize_axes=False)
+        line(x=self.x, y=self.z,
+             grid=False, resize_axes=False)
         self.below = True</code></pre>
 </details>
 </dd>
@@ -3004,7 +2875,7 @@ backend=None</p></div>
 </dd>
 <dt id="mpl_plotter.two_d.methods.heatmap"><code class="flex name class">
 <span>class <span class="ident">heatmap</span></span>
-<span>(</span><span>x=None, y=None, z=None, normvariant='SymLog', color=None, cmap='RdBu_r', alpha=None, norm=None, backend='Qt5Agg', font='serif', math_font='dejavuserif', font_color='black', font_size_increase=0, fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True, scale=None, aspect=None, workspace_color=None, workspace_color2=None, background_color_figure='white', background_color_plot='white', background_alpha=1, style=None, light=None, dark=None, spine_color=None, spines_removed=(0, 0, 1, 1), x_upper_bound=None, x_lower_bound=None, y_upper_bound=None, y_lower_bound=None, x_bounds=None, y_bounds=None, demo_pad_plot=False, x_upper_resize_pad=0, x_lower_resize_pad=0, y_upper_resize_pad=0, y_lower_resize_pad=0, grid=True, grid_color='lightgrey', grid_lines='-.', title=None, title_size=12, title_y=1.025, title_weight=None, title_font=None, title_color=None, x_label=None, x_label_size=12, x_label_pad=10, x_label_rotation=None, x_label_weight=None, y_label=None, y_label_size=12, y_label_pad=10, y_label_rotation=None, y_label_weight=None, x_tick_number=5, y_tick_number=5, x_label_coords=None, y_label_coords=None, tick_color=None, tick_label_pad=5, ticks_where=(1, 1, 0, 0), tick_label_size=10, x_tick_label_size=None, y_tick_label_size=None, x_custom_tick_locations=None, y_custom_tick_locations=None, fine_tick_locations=True, x_custom_tick_labels=None, y_custom_tick_labels=None, x_date_tick_labels=False, date_format='%Y-%m-%d', tick_ndecimals=1, x_tick_ndecimals=None, y_tick_ndecimals=None, x_tick_rotation=None, y_tick_rotation=None, tick_labels_where=(1, 1, 0, 0), color_bar=False, cb_pad=0.2, cb_axis_labelpad=10, shrink=0.75, extend='neither', cb_title=None, cb_orientation='vertical', cb_title_rotation=None, cb_title_style='normal', cb_title_size=10, cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False, cb_top_title_pad=None, x_cb_top_title=0, cb_vmin=None, cb_vmax=None, cb_hard_bounds=False, cb_outline_width=None, cb_tick_number=5, cb_ticklabelsize=10, cb_tick_ndecimals=None, plot_label=None, legend=False, legend_loc='upper right', legend_bbox_to_anchor=None, legend_size=13, legend_weight='normal', legend_style='normal', legend_handleheight=None, legend_ncol=1, show=False, zorder=None, filename=None, dpi=None, suppress=True)</span>
+<span>(</span><span>x=None, y=None, z=None, normvariant='SymLog', color=None, cmap='RdBu_r', alpha=None, norm=None, backend='Qt5Agg', font='serif', math_font='dejavuserif', font_color='black', font_size_increase=0, fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True, scale=None, aspect=1, workspace_color=None, workspace_color2=None, background_color_figure='white', background_color_plot='white', background_alpha=1, style=None, light=None, dark=None, spine_color=None, spines_removed=(0, 0, 1, 1), x_upper_bound=None, x_lower_bound=None, y_upper_bound=None, y_lower_bound=None, x_bounds=None, y_bounds=None, demo_pad_plot=False, x_upper_resize_pad=0, x_lower_resize_pad=0, y_upper_resize_pad=0, y_lower_resize_pad=0, grid=True, grid_color='lightgrey', grid_lines='-.', title=None, title_size=12, title_y=1.025, title_weight=None, title_font=None, title_color=None, x_label=None, x_label_size=12, x_label_pad=10, x_label_rotation=None, x_label_weight=None, y_label=None, y_label_size=12, y_label_pad=10, y_label_rotation=None, y_label_weight=None, x_tick_number=5, y_tick_number=5, x_label_coords=None, y_label_coords=None, tick_color=None, tick_label_pad=5, ticks_where=(1, 1, 0, 0), tick_label_size=10, x_tick_label_size=None, y_tick_label_size=None, x_custom_tick_locations=None, y_custom_tick_locations=None, fine_tick_locations=True, x_custom_tick_labels=None, y_custom_tick_labels=None, x_date_tick_labels=False, date_format='%Y-%m-%d', tick_ndecimals=1, x_tick_ndecimals=None, y_tick_ndecimals=None, x_tick_rotation=None, y_tick_rotation=None, tick_labels_where=(1, 1, 0, 0), color_bar=False, cb_pad=0.2, cb_axis_labelpad=10, shrink=0.75, extend='neither', cb_title=None, cb_orientation='vertical', cb_title_rotation=None, cb_title_style='normal', cb_title_size=10, cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False, cb_top_title_pad=None, x_cb_top_title=0, cb_vmin=None, cb_vmax=None, cb_hard_bounds=False, cb_outline_width=None, cb_tick_number=5, cb_ticklabelsize=10, cb_tick_ndecimals=None, plot_label=None, legend=False, legend_loc='upper right', legend_bbox_to_anchor=None, legend_size=13, legend_weight='normal', legend_style='normal', legend_handleheight=None, legend_ncol=1, show=False, zorder=None, filename=None, dpi=None, suppress=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Heatmap plot class
@@ -3032,7 +2903,7 @@ backend=None</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class heatmap(plot, df_input):
+<pre><code class="python">class heatmap(plot):
 
     def __init__(self,
                  # Specifics
@@ -3045,7 +2916,7 @@ backend=None</p></div>
                  font=&#39;serif&#39;, math_font=&#34;dejavuserif&#34;, font_color=&#34;black&#34;, font_size_increase=0,
                  # Figure, axes
                  fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True,
-                 scale=None, aspect=None,
+                 scale=None, aspect=1,
                  # Setup
                  workspace_color=None, workspace_color2=None,
                  background_color_figure=&#39;white&#39;, background_color_plot=&#39;white&#39;, background_alpha=1,
@@ -3140,34 +3011,24 @@ backend=None</p></div>
         self.init()
 
     def plot(self):
-
-        if not isinstance(self.x, type(None)) and not isinstance(self.y, type(None)):
-            self.graph = self.ax.pcolormesh(self.x, self.y, self.z, cmap=self.cmap,
-                                            zorder=self.zorder,
-                                            alpha=self.alpha,
-                                            label=self.plot_label,
-                                            )
-            # Resize axes
-            self.method_resize_axes()
-
-        else:
-            self.graph = self.ax.pcolormesh(self.z, cmap=self.cmap, norm=self.norm,
-                                            zorder=self.zorder,
-                                            alpha=self.alpha,
-                                            label=self.plot_label, )
-            # Resize axes
-            self.method_resize_axes_dataframe()
+        self.graph = self.ax.pcolormesh(self.x, self.y, self.z, cmap=self.cmap,
+                                        zorder=self.zorder,
+                                        alpha=self.alpha,
+                                        label=self.plot_label,
+                                        shading=&#39;auto&#39;
+                                        )
+        # Resize axes
+        self.method_resize_axes()
 
     def mock(self):
         if isinstance(self.x, type(None)) and isinstance(self.y, type(None)):
-            self.z = MockData().waterdropdf()</code></pre>
+            self.x, self.y, self.z = MockData().waterdrop()</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="mpl_plotter.two_d.methods.plot" href="#mpl_plotter.two_d.methods.plot">plot</a></li>
 <li><a title="mpl_plotter.two_d.methods.canvas" href="#mpl_plotter.two_d.methods.canvas">canvas</a></li>
 <li><a title="mpl_plotter.two_d.methods.attributes" href="#mpl_plotter.two_d.methods.attributes">attributes</a></li>
-<li><a title="mpl_plotter.two_d.methods.df_input" href="#mpl_plotter.two_d.methods.df_input">df_input</a></li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -3186,7 +3047,7 @@ backend=None</p></div>
 </summary>
 <pre><code class="python">def mock(self):
     if isinstance(self.x, type(None)) and isinstance(self.y, type(None)):
-        self.z = MockData().waterdropdf()</code></pre>
+        self.x, self.y, self.z = MockData().waterdrop()</code></pre>
 </details>
 </dd>
 <dt id="mpl_plotter.two_d.methods.heatmap.plot"><code class="name flex">
@@ -3199,23 +3060,14 @@ backend=None</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def plot(self):
-
-    if not isinstance(self.x, type(None)) and not isinstance(self.y, type(None)):
-        self.graph = self.ax.pcolormesh(self.x, self.y, self.z, cmap=self.cmap,
-                                        zorder=self.zorder,
-                                        alpha=self.alpha,
-                                        label=self.plot_label,
-                                        )
-        # Resize axes
-        self.method_resize_axes()
-
-    else:
-        self.graph = self.ax.pcolormesh(self.z, cmap=self.cmap, norm=self.norm,
-                                        zorder=self.zorder,
-                                        alpha=self.alpha,
-                                        label=self.plot_label, )
-        # Resize axes
-        self.method_resize_axes_dataframe()</code></pre>
+    self.graph = self.ax.pcolormesh(self.x, self.y, self.z, cmap=self.cmap,
+                                    zorder=self.zorder,
+                                    alpha=self.alpha,
+                                    label=self.plot_label,
+                                    shading=&#39;auto&#39;
+                                    )
+    # Resize axes
+    self.method_resize_axes()</code></pre>
 </details>
 </dd>
 </dl>
@@ -3231,7 +3083,7 @@ backend=None</p></div>
 </dd>
 <dt id="mpl_plotter.two_d.methods.line"><code class="flex name class">
 <span>class <span class="ident">line</span></span>
-<span>(</span><span>x=None, y=None, line_width=2, color='darkred', cmap='RdBu_r', alpha=None, norm=None, backend='Qt5Agg', font='serif', math_font='dejavuserif', font_color='black', font_size_increase=0, fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True, scale=None, aspect=None, workspace_color=None, workspace_color2=None, background_color_figure='white', background_color_plot='white', background_alpha=1, style=None, light=None, dark=None, spine_color=None, spines_removed=(0, 0, 1, 1), x_upper_bound=None, x_lower_bound=None, y_upper_bound=None, y_lower_bound=None, x_bounds=None, y_bounds=None, demo_pad_plot=False, x_upper_resize_pad=0, x_lower_resize_pad=0, y_upper_resize_pad=0, y_lower_resize_pad=0, grid=True, grid_color='lightgrey', grid_lines='-.', title=None, title_size=12, title_y=1.025, title_weight=None, title_font=None, title_color=None, x_label=None, x_label_size=12, x_label_pad=10, x_label_rotation=None, x_label_weight=None, y_label=None, y_label_size=12, y_label_pad=10, y_label_rotation=None, y_label_weight=None, x_tick_number=5, y_tick_number=5, x_label_coords=None, y_label_coords=None, tick_color=None, tick_label_pad=5, ticks_where=(1, 1, 0, 0), tick_label_size=10, x_tick_label_size=None, y_tick_label_size=None, x_custom_tick_locations=None, y_custom_tick_locations=None, fine_tick_locations=True, x_custom_tick_labels=None, y_custom_tick_labels=None, x_date_tick_labels=False, date_format='%Y-%m-%d', tick_ndecimals=1, x_tick_ndecimals=None, y_tick_ndecimals=None, x_tick_rotation=None, y_tick_rotation=None, tick_labels_where=(1, 1, 0, 0), color_bar=False, cb_pad=0.2, cb_axis_labelpad=10, shrink=0.75, extend='neither', cb_title=None, cb_orientation='vertical', cb_title_rotation=None, cb_title_style='normal', cb_title_size=10, cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False, cb_top_title_pad=None, x_cb_top_title=0, cb_vmin=None, cb_vmax=None, cb_hard_bounds=False, cb_outline_width=None, cb_tick_number=5, cb_ticklabelsize=10, cb_tick_ndecimals=None, plot_label=None, legend=False, legend_loc='upper right', legend_bbox_to_anchor=None, legend_size=13, legend_weight='normal', legend_style='normal', legend_handleheight=None, legend_ncol=1, show=False, zorder=None, filename=None, dpi=None, suppress=True)</span>
+<span>(</span><span>x=None, y=None, line_width=2, color='darkred', cmap='RdBu_r', alpha=None, norm=None, backend='Qt5Agg', font='serif', math_font='dejavuserif', font_color='black', font_size_increase=0, fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True, scale=None, aspect=1, workspace_color=None, workspace_color2=None, background_color_figure='white', background_color_plot='white', background_alpha=1, style=None, light=None, dark=None, spine_color=None, spines_removed=(0, 0, 1, 1), x_upper_bound=None, x_lower_bound=None, y_upper_bound=None, y_lower_bound=None, x_bounds=None, y_bounds=None, demo_pad_plot=False, x_upper_resize_pad=0, x_lower_resize_pad=0, y_upper_resize_pad=0, y_lower_resize_pad=0, grid=True, grid_color='lightgrey', grid_lines='-.', title=None, title_size=12, title_y=1.025, title_weight=None, title_font=None, title_color=None, x_label=None, x_label_size=12, x_label_pad=10, x_label_rotation=None, x_label_weight=None, y_label=None, y_label_size=12, y_label_pad=10, y_label_rotation=None, y_label_weight=None, x_tick_number=5, y_tick_number=5, x_label_coords=None, y_label_coords=None, tick_color=None, tick_label_pad=5, ticks_where=(1, 1, 0, 0), tick_label_size=10, x_tick_label_size=None, y_tick_label_size=None, x_custom_tick_locations=None, y_custom_tick_locations=None, fine_tick_locations=True, x_custom_tick_labels=None, y_custom_tick_labels=None, x_date_tick_labels=False, date_format='%Y-%m-%d', tick_ndecimals=1, x_tick_ndecimals=None, y_tick_ndecimals=None, x_tick_rotation=None, y_tick_rotation=None, tick_labels_where=(1, 1, 0, 0), color_bar=False, cb_pad=0.2, cb_axis_labelpad=10, shrink=0.75, extend='neither', cb_title=None, cb_orientation='vertical', cb_title_rotation=None, cb_title_style='normal', cb_title_size=10, cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False, cb_top_title_pad=None, x_cb_top_title=0, cb_vmin=None, cb_vmax=None, cb_hard_bounds=False, cb_outline_width=None, cb_tick_number=5, cb_ticklabelsize=10, cb_tick_ndecimals=None, plot_label=None, legend=False, legend_loc='upper right', legend_bbox_to_anchor=None, legend_size=13, legend_weight='normal', legend_style='normal', legend_handleheight=None, legend_ncol=1, show=False, zorder=None, filename=None, dpi=None, suppress=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Line plot class
@@ -3258,7 +3110,7 @@ backend=None</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class line(plot, std_input):
+<pre><code class="python">class line(plot):
 
     def __init__(self,
                  # Specifics
@@ -3271,7 +3123,7 @@ backend=None</p></div>
                  font=&#39;serif&#39;, math_font=&#34;dejavuserif&#34;, font_color=&#34;black&#34;, font_size_increase=0,
                  # Figure, axes
                  fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True,
-                 scale=None, aspect=None,
+                 scale=None, aspect=1,
                  # Setup
                  workspace_color=None, workspace_color2=None,
                  background_color_figure=&#39;white&#39;, background_color_plot=&#39;white&#39;, background_alpha=1,
@@ -3400,7 +3252,6 @@ backend=None</p></div>
 <li><a title="mpl_plotter.two_d.methods.plot" href="#mpl_plotter.two_d.methods.plot">plot</a></li>
 <li><a title="mpl_plotter.two_d.methods.canvas" href="#mpl_plotter.two_d.methods.canvas">canvas</a></li>
 <li><a title="mpl_plotter.two_d.methods.attributes" href="#mpl_plotter.two_d.methods.attributes">attributes</a></li>
-<li><a title="mpl_plotter.two_d.methods.std_input" href="#mpl_plotter.two_d.methods.std_input">std_input</a></li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -3496,10 +3347,6 @@ backend=None</p></div>
 
     def run(self):
         self.main()
-        try:
-            self.custom()
-        except AttributeError:
-            pass
         self.finish()
 
     def main(self):
@@ -3512,14 +3359,17 @@ backend=None</p></div>
 
         # Mock plot
         self.mock()
-
         # Plot
         self.plot()
 
+    def finish(self):
+        # Resize axes
+        self.method_resize_axes()
+        # Legend
+        self.method_legend()
         # Colorbar
         self.method_cb()
 
-    def finish(self):
         # Makeup
         self.method_title()
         self.method_axis_labels()
@@ -3569,6 +3419,13 @@ backend=None</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def finish(self):
+    # Resize axes
+    self.method_resize_axes()
+    # Legend
+    self.method_legend()
+    # Colorbar
+    self.method_cb()
+
     # Makeup
     self.method_title()
     self.method_axis_labels()
@@ -3622,12 +3479,8 @@ backend=None</p></div>
 
     # Mock plot
     self.mock()
-
     # Plot
-    self.plot()
-
-    # Colorbar
-    self.method_cb()</code></pre>
+    self.plot()</code></pre>
 </details>
 </dd>
 <dt id="mpl_plotter.two_d.methods.plot.method_save"><code class="name flex">
@@ -3673,10 +3526,6 @@ backend=None</p></div>
 </summary>
 <pre><code class="python">def run(self):
     self.main()
-    try:
-        self.custom()
-    except AttributeError:
-        pass
     self.finish()</code></pre>
 </details>
 </dd>
@@ -3697,7 +3546,7 @@ backend=None</p></div>
 </dd>
 <dt id="mpl_plotter.two_d.methods.quiver"><code class="flex name class">
 <span>class <span class="ident">quiver</span></span>
-<span>(</span><span>x=None, y=None, u=None, v=None, color=None, cmap='RdBu_r', alpha=None, norm=None, rule=None, custom_rule=None, vector_width=0.01, vector_min_shaft=2, vector_length_threshold=0.1, backend='Qt5Agg', font='serif', math_font='dejavuserif', font_color='black', font_size_increase=0, fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True, scale=None, aspect=None, workspace_color=None, workspace_color2=None, background_color_figure='white', background_color_plot='white', background_alpha=1, style=None, light=None, dark=None, spine_color=None, spines_removed=(0, 0, 1, 1), x_upper_bound=None, x_lower_bound=None, y_upper_bound=None, y_lower_bound=None, x_bounds=None, y_bounds=None, demo_pad_plot=False, x_upper_resize_pad=0, x_lower_resize_pad=0, y_upper_resize_pad=0, y_lower_resize_pad=0, grid=True, grid_color='lightgrey', grid_lines='-.', title=None, title_size=12, title_y=1.025, title_weight=None, title_font=None, title_color=None, x_label=None, x_label_size=12, x_label_pad=10, x_label_rotation=None, x_label_weight=None, y_label=None, y_label_size=12, y_label_pad=10, y_label_rotation=None, y_label_weight=None, x_tick_number=5, y_tick_number=5, x_label_coords=None, y_label_coords=None, tick_color=None, tick_label_pad=5, ticks_where=(1, 1, 0, 0), tick_label_size=10, x_tick_label_size=None, y_tick_label_size=None, x_custom_tick_locations=None, y_custom_tick_locations=None, fine_tick_locations=True, x_custom_tick_labels=None, y_custom_tick_labels=None, x_date_tick_labels=False, date_format='%Y-%m-%d', tick_ndecimals=1, x_tick_ndecimals=None, y_tick_ndecimals=None, x_tick_rotation=None, y_tick_rotation=None, tick_labels_where=(1, 1, 0, 0), color_bar=False, cb_pad=0.2, cb_axis_labelpad=10, shrink=0.75, extend='neither', cb_title=None, cb_orientation='vertical', cb_title_rotation=None, cb_title_style='normal', cb_title_size=10, cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False, cb_top_title_pad=None, x_cb_top_title=0, cb_vmin=None, cb_vmax=None, cb_hard_bounds=False, cb_outline_width=None, cb_tick_number=5, cb_ticklabelsize=10, cb_tick_ndecimals=None, plot_label=None, legend=False, legend_loc='upper right', legend_bbox_to_anchor=None, legend_size=13, legend_weight='normal', legend_style='normal', legend_handleheight=None, legend_ncol=1, show=False, zorder=None, filename=None, dpi=None, suppress=True)</span>
+<span>(</span><span>x=None, y=None, u=None, v=None, color=None, cmap='RdBu_r', alpha=None, norm=None, rule=None, custom_rule=None, vector_width=0.01, vector_min_shaft=2, vector_length_threshold=0.1, backend='Qt5Agg', font='serif', math_font='dejavuserif', font_color='black', font_size_increase=0, fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True, scale=None, aspect=1, workspace_color=None, workspace_color2=None, background_color_figure='white', background_color_plot='white', background_alpha=1, style=None, light=None, dark=None, spine_color=None, spines_removed=(0, 0, 1, 1), x_upper_bound=None, x_lower_bound=None, y_upper_bound=None, y_lower_bound=None, x_bounds=None, y_bounds=None, demo_pad_plot=False, x_upper_resize_pad=0, x_lower_resize_pad=0, y_upper_resize_pad=0, y_lower_resize_pad=0, grid=True, grid_color='lightgrey', grid_lines='-.', title=None, title_size=12, title_y=1.025, title_weight=None, title_font=None, title_color=None, x_label=None, x_label_size=12, x_label_pad=10, x_label_rotation=None, x_label_weight=None, y_label=None, y_label_size=12, y_label_pad=10, y_label_rotation=None, y_label_weight=None, x_tick_number=5, y_tick_number=5, x_label_coords=None, y_label_coords=None, tick_color=None, tick_label_pad=5, ticks_where=(1, 1, 0, 0), tick_label_size=10, x_tick_label_size=None, y_tick_label_size=None, x_custom_tick_locations=None, y_custom_tick_locations=None, fine_tick_locations=True, x_custom_tick_labels=None, y_custom_tick_labels=None, x_date_tick_labels=False, date_format='%Y-%m-%d', tick_ndecimals=1, x_tick_ndecimals=None, y_tick_ndecimals=None, x_tick_rotation=None, y_tick_rotation=None, tick_labels_where=(1, 1, 0, 0), color_bar=False, cb_pad=0.2, cb_axis_labelpad=10, shrink=0.75, extend='neither', cb_title=None, cb_orientation='vertical', cb_title_rotation=None, cb_title_style='normal', cb_title_size=10, cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False, cb_top_title_pad=None, x_cb_top_title=0, cb_vmin=None, cb_vmax=None, cb_hard_bounds=False, cb_outline_width=None, cb_tick_number=5, cb_ticklabelsize=10, cb_tick_ndecimals=None, plot_label=None, legend=False, legend_loc='upper right', legend_bbox_to_anchor=None, legend_size=13, legend_weight='normal', legend_style='normal', legend_handleheight=None, legend_ncol=1, show=False, zorder=None, filename=None, dpi=None, suppress=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Quiver plot class
@@ -3732,7 +3581,7 @@ backend=None</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class quiver(plot, std_input):
+<pre><code class="python">class quiver(plot):
 
     def __init__(self,
                  # Specifics
@@ -3746,7 +3595,7 @@ backend=None</p></div>
                  font=&#39;serif&#39;, math_font=&#34;dejavuserif&#34;, font_color=&#34;black&#34;, font_size_increase=0,
                  # Figure, axes
                  fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True,
-                 scale=None, aspect=None,
+                 scale=None, aspect=1,
                  # Setup
                  workspace_color=None, workspace_color2=None,
                  background_color_figure=&#39;white&#39;, background_color_plot=&#39;white&#39;, background_alpha=1,
@@ -3892,7 +3741,6 @@ backend=None</p></div>
 <li><a title="mpl_plotter.two_d.methods.plot" href="#mpl_plotter.two_d.methods.plot">plot</a></li>
 <li><a title="mpl_plotter.two_d.methods.canvas" href="#mpl_plotter.two_d.methods.canvas">canvas</a></li>
 <li><a title="mpl_plotter.two_d.methods.attributes" href="#mpl_plotter.two_d.methods.attributes">attributes</a></li>
-<li><a title="mpl_plotter.two_d.methods.std_input" href="#mpl_plotter.two_d.methods.std_input">std_input</a></li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -3985,7 +3833,7 @@ backend=None</p></div>
 </dd>
 <dt id="mpl_plotter.two_d.methods.scatter"><code class="flex name class">
 <span>class <span class="ident">scatter</span></span>
-<span>(</span><span>x=None, y=None, point_size=5, marker='o', facecolors=None, color='C0', cmap='RdBu_r', alpha=None, norm=None, backend='Qt5Agg', font='serif', math_font='dejavuserif', font_color='black', font_size_increase=0, fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True, scale=None, aspect=None, workspace_color=None, workspace_color2=None, background_color_figure='white', background_color_plot='white', background_alpha=1, style=None, light=None, dark=None, spine_color=None, spines_removed=(0, 0, 1, 1), x_upper_bound=None, x_lower_bound=None, y_upper_bound=None, y_lower_bound=None, x_bounds=None, y_bounds=None, demo_pad_plot=False, x_upper_resize_pad=0, x_lower_resize_pad=0, y_upper_resize_pad=0, y_lower_resize_pad=0, grid=True, grid_color='lightgrey', grid_lines='-.', title=None, title_size=12, title_y=1.025, title_weight=None, title_font=None, title_color=None, x_label=None, x_label_size=12, x_label_pad=10, x_label_rotation=None, x_label_weight=None, y_label=None, y_label_size=12, y_label_pad=10, y_label_rotation=None, y_label_weight=None, x_tick_number=5, y_tick_number=5, x_label_coords=None, y_label_coords=None, tick_color=None, tick_label_pad=5, ticks_where=(1, 1, 0, 0), tick_label_size=10, x_tick_label_size=None, y_tick_label_size=None, x_custom_tick_locations=None, y_custom_tick_locations=None, fine_tick_locations=True, x_custom_tick_labels=None, y_custom_tick_labels=None, x_date_tick_labels=False, date_format='%Y-%m-%d', tick_ndecimals=1, x_tick_ndecimals=None, y_tick_ndecimals=None, x_tick_rotation=None, y_tick_rotation=None, tick_labels_where=(1, 1, 0, 0), color_bar=False, cb_pad=0.2, cb_axis_labelpad=10, shrink=0.75, extend='neither', cb_title=None, cb_orientation='vertical', cb_title_rotation=None, cb_title_style='normal', cb_title_size=10, cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False, cb_top_title_pad=None, x_cb_top_title=0, cb_vmin=None, cb_vmax=None, cb_hard_bounds=False, cb_outline_width=None, cb_tick_number=5, cb_ticklabelsize=10, cb_tick_ndecimals=None, plot_label=None, legend=False, legend_loc='upper right', legend_bbox_to_anchor=None, legend_size=13, legend_weight='normal', legend_style='normal', legend_handleheight=None, legend_ncol=1, show=False, zorder=None, filename=None, dpi=None, suppress=True)</span>
+<span>(</span><span>x=None, y=None, point_size=5, marker='o', facecolors=None, color='C0', cmap='RdBu_r', alpha=None, norm=None, backend='Qt5Agg', font='serif', math_font='dejavuserif', font_color='black', font_size_increase=0, fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True, scale=None, aspect=1, workspace_color=None, workspace_color2=None, background_color_figure='white', background_color_plot='white', background_alpha=1, style=None, light=None, dark=None, spine_color=None, spines_removed=(0, 0, 1, 1), x_upper_bound=None, x_lower_bound=None, y_upper_bound=None, y_lower_bound=None, x_bounds=None, y_bounds=None, demo_pad_plot=False, x_upper_resize_pad=0, x_lower_resize_pad=0, y_upper_resize_pad=0, y_lower_resize_pad=0, grid=True, grid_color='lightgrey', grid_lines='-.', title=None, title_size=12, title_y=1.025, title_weight=None, title_font=None, title_color=None, x_label=None, x_label_size=12, x_label_pad=10, x_label_rotation=None, x_label_weight=None, y_label=None, y_label_size=12, y_label_pad=10, y_label_rotation=None, y_label_weight=None, x_tick_number=5, y_tick_number=5, x_label_coords=None, y_label_coords=None, tick_color=None, tick_label_pad=5, ticks_where=(1, 1, 0, 0), tick_label_size=10, x_tick_label_size=None, y_tick_label_size=None, x_custom_tick_locations=None, y_custom_tick_locations=None, fine_tick_locations=True, x_custom_tick_labels=None, y_custom_tick_labels=None, x_date_tick_labels=False, date_format='%Y-%m-%d', tick_ndecimals=1, x_tick_ndecimals=None, y_tick_ndecimals=None, x_tick_rotation=None, y_tick_rotation=None, tick_labels_where=(1, 1, 0, 0), color_bar=False, cb_pad=0.2, cb_axis_labelpad=10, shrink=0.75, extend='neither', cb_title=None, cb_orientation='vertical', cb_title_rotation=None, cb_title_style='normal', cb_title_size=10, cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False, cb_top_title_pad=None, x_cb_top_title=0, cb_vmin=None, cb_vmax=None, cb_hard_bounds=False, cb_outline_width=None, cb_tick_number=5, cb_ticklabelsize=10, cb_tick_ndecimals=None, plot_label=None, legend=False, legend_loc='upper right', legend_bbox_to_anchor=None, legend_size=13, legend_weight='normal', legend_style='normal', legend_handleheight=None, legend_ncol=1, show=False, zorder=None, filename=None, dpi=None, suppress=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Scatter plot class
@@ -4013,7 +3861,7 @@ backend=None</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class scatter(plot, std_input):
+<pre><code class="python">class scatter(plot):
 
     def __init__(self,
                  # Specifics
@@ -4026,7 +3874,7 @@ backend=None</p></div>
                  font=&#39;serif&#39;, math_font=&#34;dejavuserif&#34;, font_color=&#34;black&#34;, font_size_increase=0,
                  # Figure, axes
                  fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True,
-                 scale=None, aspect=None,
+                 scale=None, aspect=1,
                  # Setup
                  workspace_color=None, workspace_color2=None,
                  background_color_figure=&#39;white&#39;, background_color_plot=&#39;white&#39;, background_alpha=1,
@@ -4144,7 +3992,6 @@ backend=None</p></div>
 <li><a title="mpl_plotter.two_d.methods.plot" href="#mpl_plotter.two_d.methods.plot">plot</a></li>
 <li><a title="mpl_plotter.two_d.methods.canvas" href="#mpl_plotter.two_d.methods.canvas">canvas</a></li>
 <li><a title="mpl_plotter.two_d.methods.attributes" href="#mpl_plotter.two_d.methods.attributes">attributes</a></li>
-<li><a title="mpl_plotter.two_d.methods.std_input" href="#mpl_plotter.two_d.methods.std_input">std_input</a></li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -4203,54 +4050,9 @@ backend=None</p></div>
 </li>
 </ul>
 </dd>
-<dt id="mpl_plotter.two_d.methods.std_input"><code class="flex name class">
-<span>class <span class="ident">std_input</span></span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class std_input():
-
-    def custom(self):
-        # Resize axes
-        self.method_resize_axes()
-        # Legend
-        self.method_legend()</code></pre>
-</details>
-<h3>Subclasses</h3>
-<ul class="hlist">
-<li><a title="mpl_plotter.two_d.methods.fill_area" href="#mpl_plotter.two_d.methods.fill_area">fill_area</a></li>
-<li><a title="mpl_plotter.two_d.methods.line" href="#mpl_plotter.two_d.methods.line">line</a></li>
-<li><a title="mpl_plotter.two_d.methods.quiver" href="#mpl_plotter.two_d.methods.quiver">quiver</a></li>
-<li><a title="mpl_plotter.two_d.methods.scatter" href="#mpl_plotter.two_d.methods.scatter">scatter</a></li>
-<li><a title="mpl_plotter.two_d.methods.streamline" href="#mpl_plotter.two_d.methods.streamline">streamline</a></li>
-</ul>
-<h3>Methods</h3>
-<dl>
-<dt id="mpl_plotter.two_d.methods.std_input.custom"><code class="name flex">
-<span>def <span class="ident">custom</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def custom(self):
-    # Resize axes
-    self.method_resize_axes()
-    # Legend
-    self.method_legend()</code></pre>
-</details>
-</dd>
-</dl>
-</dd>
 <dt id="mpl_plotter.two_d.methods.streamline"><code class="flex name class">
 <span>class <span class="ident">streamline</span></span>
-<span>(</span><span>x=None, y=None, u=None, v=None, line_width=1, line_density=2, color=None, cmap='RdBu_r', alpha=None, norm=None, backend='Qt5Agg', font='serif', math_font='dejavuserif', font_color='black', font_size_increase=0, fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True, scale=None, aspect=None, workspace_color=None, workspace_color2=None, background_color_figure='white', background_color_plot='white', background_alpha=1, style=None, light=None, dark=None, spine_color=None, spines_removed=(0, 0, 1, 1), x_upper_bound=None, x_lower_bound=None, y_upper_bound=None, y_lower_bound=None, x_bounds=None, y_bounds=None, demo_pad_plot=False, x_upper_resize_pad=0, x_lower_resize_pad=0, y_upper_resize_pad=0, y_lower_resize_pad=0, grid=True, grid_color='lightgrey', grid_lines='-.', title=None, title_size=12, title_y=1.025, title_weight=None, title_font=None, title_color=None, x_label=None, x_label_size=12, x_label_pad=10, x_label_rotation=None, x_label_weight=None, y_label=None, y_label_size=12, y_label_pad=10, y_label_rotation=None, y_label_weight=None, x_tick_number=5, y_tick_number=5, x_label_coords=None, y_label_coords=None, tick_color=None, tick_label_pad=5, ticks_where=(1, 1, 0, 0), tick_label_size=10, x_tick_label_size=None, y_tick_label_size=None, x_custom_tick_locations=None, y_custom_tick_locations=None, fine_tick_locations=True, x_custom_tick_labels=None, y_custom_tick_labels=None, x_date_tick_labels=False, date_format='%Y-%m-%d', tick_ndecimals=1, x_tick_ndecimals=None, y_tick_ndecimals=None, x_tick_rotation=None, y_tick_rotation=None, tick_labels_where=(1, 1, 0, 0), color_bar=False, cb_pad=0.2, cb_axis_labelpad=10, shrink=0.75, extend='neither', cb_title=None, cb_orientation='vertical', cb_title_rotation=None, cb_title_style='normal', cb_title_size=10, cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False, cb_top_title_pad=None, x_cb_top_title=0, cb_vmin=None, cb_vmax=None, cb_hard_bounds=False, cb_outline_width=None, cb_tick_number=5, cb_ticklabelsize=10, cb_tick_ndecimals=None, plot_label=None, legend=False, legend_loc='upper right', legend_bbox_to_anchor=None, legend_size=13, legend_weight='normal', legend_style='normal', legend_handleheight=None, legend_ncol=1, show=False, zorder=None, filename=None, dpi=None, suppress=True)</span>
+<span>(</span><span>x=None, y=None, u=None, v=None, line_width=1, line_density=2, color=None, cmap='RdBu_r', alpha=None, norm=None, backend='Qt5Agg', font='serif', math_font='dejavuserif', font_color='black', font_size_increase=0, fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True, scale=None, aspect=1, workspace_color=None, workspace_color2=None, background_color_figure='white', background_color_plot='white', background_alpha=1, style=None, light=None, dark=None, spine_color=None, spines_removed=(0, 0, 1, 1), x_upper_bound=None, x_lower_bound=None, y_upper_bound=None, y_lower_bound=None, x_bounds=None, y_bounds=None, demo_pad_plot=False, x_upper_resize_pad=0, x_lower_resize_pad=0, y_upper_resize_pad=0, y_lower_resize_pad=0, grid=True, grid_color='lightgrey', grid_lines='-.', title=None, title_size=12, title_y=1.025, title_weight=None, title_font=None, title_color=None, x_label=None, x_label_size=12, x_label_pad=10, x_label_rotation=None, x_label_weight=None, y_label=None, y_label_size=12, y_label_pad=10, y_label_rotation=None, y_label_weight=None, x_tick_number=5, y_tick_number=5, x_label_coords=None, y_label_coords=None, tick_color=None, tick_label_pad=5, ticks_where=(1, 1, 0, 0), tick_label_size=10, x_tick_label_size=None, y_tick_label_size=None, x_custom_tick_locations=None, y_custom_tick_locations=None, fine_tick_locations=True, x_custom_tick_labels=None, y_custom_tick_labels=None, x_date_tick_labels=False, date_format='%Y-%m-%d', tick_ndecimals=1, x_tick_ndecimals=None, y_tick_ndecimals=None, x_tick_rotation=None, y_tick_rotation=None, tick_labels_where=(1, 1, 0, 0), color_bar=False, cb_pad=0.2, cb_axis_labelpad=10, shrink=0.75, extend='neither', cb_title=None, cb_orientation='vertical', cb_title_rotation=None, cb_title_style='normal', cb_title_size=10, cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False, cb_top_title_pad=None, x_cb_top_title=0, cb_vmin=None, cb_vmax=None, cb_hard_bounds=False, cb_outline_width=None, cb_tick_number=5, cb_ticklabelsize=10, cb_tick_ndecimals=None, plot_label=None, legend=False, legend_loc='upper right', legend_bbox_to_anchor=None, legend_size=13, legend_weight='normal', legend_style='normal', legend_handleheight=None, legend_ncol=1, show=False, zorder=None, filename=None, dpi=None, suppress=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Streamline class
@@ -4280,7 +4082,7 @@ backend=None</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class streamline(plot, std_input):
+<pre><code class="python">class streamline(plot):
 
     def __init__(self,
                  # Specifics
@@ -4293,7 +4095,7 @@ backend=None</p></div>
                  font=&#39;serif&#39;, math_font=&#34;dejavuserif&#34;, font_color=&#34;black&#34;, font_size_increase=0,
                  # Figure, axes
                  fig=None, ax=None, figsize=None, shape_and_position=111, resize_axes=True,
-                 scale=None, aspect=None,
+                 scale=None, aspect=1,
                  # Setup
                  workspace_color=None, workspace_color2=None,
                  background_color_figure=&#39;white&#39;, background_color_plot=&#39;white&#39;, background_alpha=1,
@@ -4424,7 +4226,6 @@ backend=None</p></div>
 <li><a title="mpl_plotter.two_d.methods.plot" href="#mpl_plotter.two_d.methods.plot">plot</a></li>
 <li><a title="mpl_plotter.two_d.methods.canvas" href="#mpl_plotter.two_d.methods.canvas">canvas</a></li>
 <li><a title="mpl_plotter.two_d.methods.attributes" href="#mpl_plotter.two_d.methods.attributes">attributes</a></li>
-<li><a title="mpl_plotter.two_d.methods.std_input" href="#mpl_plotter.two_d.methods.std_input">std_input</a></li>
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -4547,12 +4348,6 @@ backend=None</p></div>
 </ul>
 </li>
 <li>
-<h4><code><a title="mpl_plotter.two_d.methods.df_input" href="#mpl_plotter.two_d.methods.df_input">df_input</a></code></h4>
-<ul class="">
-<li><code><a title="mpl_plotter.two_d.methods.df_input.method_resize_axes_dataframe" href="#mpl_plotter.two_d.methods.df_input.method_resize_axes_dataframe">method_resize_axes_dataframe</a></code></li>
-</ul>
-</li>
-<li>
 <h4><code><a title="mpl_plotter.two_d.methods.fill_area" href="#mpl_plotter.two_d.methods.fill_area">fill_area</a></code></h4>
 <ul class="">
 <li><code><a title="mpl_plotter.two_d.methods.fill_area.i_above" href="#mpl_plotter.two_d.methods.fill_area.i_above">i_above</a></code></li>
@@ -4600,12 +4395,6 @@ backend=None</p></div>
 <ul class="">
 <li><code><a title="mpl_plotter.two_d.methods.scatter.mock" href="#mpl_plotter.two_d.methods.scatter.mock">mock</a></code></li>
 <li><code><a title="mpl_plotter.two_d.methods.scatter.plot" href="#mpl_plotter.two_d.methods.scatter.plot">plot</a></code></li>
-</ul>
-</li>
-<li>
-<h4><code><a title="mpl_plotter.two_d.methods.std_input" href="#mpl_plotter.two_d.methods.std_input">std_input</a></code></h4>
-<ul class="">
-<li><code><a title="mpl_plotter.two_d.methods.std_input.custom" href="#mpl_plotter.two_d.methods.std_input.custom">custom</a></code></li>
 </ul>
 </li>
 <li>

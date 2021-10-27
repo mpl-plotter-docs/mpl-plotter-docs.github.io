@@ -103,7 +103,7 @@ class MockData:
         y = 50 * np.sin(2 * np.pi * (x + x_max) / x_max)
         return x, y
 
-    def waterdropdf(self):
+    def waterdrop(self):
 
         d = 1000
 
@@ -114,7 +114,7 @@ class MockData:
 
         z = -(1 + cos(12 * np.sqrt(x * x + y * y))) / (0.5 * (x * x + y * y) + 2)
 
-        return pd.DataFrame(z)
+        return x, y, z
 
     def boltzman(self, x, xmid, tau):
         &#34;&#34;&#34;
@@ -203,7 +203,7 @@ class MockData:
         y = 50 * np.sin(2 * np.pi * (x + x_max) / x_max)
         return x, y
 
-    def waterdropdf(self):
+    def waterdrop(self):
 
         d = 1000
 
@@ -214,7 +214,7 @@ class MockData:
 
         z = -(1 + cos(12 * np.sqrt(x * x + y * y))) / (0.5 * (x * x + y * y) + 2)
 
-        return pd.DataFrame(z)
+        return x, y, z
 
     def boltzman(self, x, xmid, tau):
         &#34;&#34;&#34;
@@ -332,8 +332,8 @@ over x</p></div>
     return x.flatten(), y.flatten()</code></pre>
 </details>
 </dd>
-<dt id="mpl_plotter.two_d.mock.MockData.waterdropdf"><code class="name flex">
-<span>def <span class="ident">waterdropdf</span></span>(<span>self)</span>
+<dt id="mpl_plotter.two_d.mock.MockData.waterdrop"><code class="name flex">
+<span>def <span class="ident">waterdrop</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -341,7 +341,7 @@ over x</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def waterdropdf(self):
+<pre><code class="python">def waterdrop(self):
 
     d = 1000
 
@@ -352,7 +352,7 @@ over x</p></div>
 
     z = -(1 + cos(12 * np.sqrt(x * x + y * y))) / (0.5 * (x * x + y * y) + 2)
 
-    return pd.DataFrame(z)</code></pre>
+    return x, y, z</code></pre>
 </details>
 </dd>
 </dl>
@@ -382,7 +382,7 @@ over x</p></div>
 <li><code><a title="mpl_plotter.two_d.mock.MockData.filled_julia" href="#mpl_plotter.two_d.mock.MockData.filled_julia">filled_julia</a></code></li>
 <li><code><a title="mpl_plotter.two_d.mock.MockData.sinewave" href="#mpl_plotter.two_d.mock.MockData.sinewave">sinewave</a></code></li>
 <li><code><a title="mpl_plotter.two_d.mock.MockData.spirograph" href="#mpl_plotter.two_d.mock.MockData.spirograph">spirograph</a></code></li>
-<li><code><a title="mpl_plotter.two_d.mock.MockData.waterdropdf" href="#mpl_plotter.two_d.mock.MockData.waterdropdf">waterdropdf</a></code></li>
+<li><code><a title="mpl_plotter.two_d.mock.MockData.waterdrop" href="#mpl_plotter.two_d.mock.MockData.waterdrop">waterdrop</a></code></li>
 </ul>
 </li>
 </ul>
