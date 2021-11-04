@@ -51,6 +51,7 @@ def comparison(x,
                y,
                f=None,
                show=False,
+               autocolor=True,
                top=None,
                bottom=None,
                left=None,
@@ -168,7 +169,7 @@ def comparison(x,
     fparams[&#39;legend&#39;]     = fparams.pop(&#39;legend&#39;,     &#39;plot_labels&#39; in plurals.keys() or &#39;plot_label&#39; in kwargs.keys())
     fparams[&#39;legend_loc&#39;] = fparams.pop(&#39;legend_loc&#39;, (0.7, 0.675))
 
-    if &#39;color&#39; not in cparams.keys() and &#39;colors&#39; not in plurals.keys():
+    if &#39;color&#39; not in cparams.keys() and &#39;colors&#39; not in plurals.keys() and autocolor:
         cparams[&#39;color&#39;] = colorscheme_one()
 
     # Limits
@@ -254,7 +255,7 @@ def comparison(x,
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="mpl_plotter.two_d.comparison.comparison"><code class="name flex">
-<span>def <span class="ident">comparison</span></span>(<span>x, y, f=None, show=False, top=None, bottom=None, left=None, right=None, wspace=None, hspace=None, **kwargs)</span>
+<span>def <span class="ident">comparison</span></span>(<span>x, y, f=None, show=False, autocolor=True, top=None, bottom=None, left=None, right=None, wspace=None, hspace=None, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><h1 id="inputs">Inputs</h1>
@@ -368,6 +369,7 @@ list of plot</p></div>
                y,
                f=None,
                show=False,
+               autocolor=True,
                top=None,
                bottom=None,
                left=None,
@@ -485,7 +487,7 @@ list of plot</p></div>
     fparams[&#39;legend&#39;]     = fparams.pop(&#39;legend&#39;,     &#39;plot_labels&#39; in plurals.keys() or &#39;plot_label&#39; in kwargs.keys())
     fparams[&#39;legend_loc&#39;] = fparams.pop(&#39;legend_loc&#39;, (0.7, 0.675))
 
-    if &#39;color&#39; not in cparams.keys() and &#39;colors&#39; not in plurals.keys():
+    if &#39;color&#39; not in cparams.keys() and &#39;colors&#39; not in plurals.keys() and autocolor:
         cparams[&#39;color&#39;] = colorscheme_one()
 
     # Limits
