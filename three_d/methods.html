@@ -238,7 +238,8 @@ class attributes:
     def method_title(self):
         if self.title is not None:
 
-            self.ax.set_title(self.title, y=self.title_y,
+            self.ax.set_title(self.title,
+                              y=self.title_y,
                               fontname=self.font if self.title_font is None else self.title_font,
                               weight=self.title_weight,
                               color=self.workspace_color if self.title_color is None else self.title_color,
@@ -1216,7 +1217,8 @@ def floating_text(ax, text, font, x, y, z, size=20, weight=&#39;normal&#39;, col
     def method_title(self):
         if self.title is not None:
 
-            self.ax.set_title(self.title, y=self.title_y,
+            self.ax.set_title(self.title,
+                              y=self.title_y,
                               fontname=self.font if self.title_font is None else self.title_font,
                               weight=self.title_weight,
                               color=self.workspace_color if self.title_color is None else self.title_color,
@@ -1768,7 +1770,8 @@ def floating_text(ax, text, font, x, y, z, size=20, weight=&#39;normal&#39;, col
 <pre><code class="python">def method_title(self):
     if self.title is not None:
 
-        self.ax.set_title(self.title, y=self.title_y,
+        self.ax.set_title(self.title,
+                          y=self.title_y,
                           fontname=self.font if self.title_font is None else self.title_font,
                           weight=self.title_weight,
                           color=self.workspace_color if self.title_color is None else self.title_color,
