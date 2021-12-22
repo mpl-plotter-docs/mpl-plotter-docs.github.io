@@ -28,6 +28,7 @@
 </summary>
 <pre><code class="python">import inspect
 import difflib
+import warnings
 import numpy as np
 import matplotlib as mpl
 
@@ -228,12 +229,15 @@ class attributes:
                 self.z_upper_resize_pad = pad_z
                 self.z_lower_resize_pad = pad_z
 
-            self.ax.set_xlim3d(self.x_bounds[0] - self.x_lower_resize_pad,
-                               self.x_bounds[1] + self.x_upper_resize_pad)
-            self.ax.set_ylim3d(self.y_bounds[0] - self.y_lower_resize_pad,
-                               self.y_bounds[1] + self.y_upper_resize_pad)
-            self.ax.set_zlim3d(self.z_bounds[0] - self.y_lower_resize_pad,
-                               self.z_bounds[1] + self.y_upper_resize_pad)
+            # Set bounds ignoring warnings if bounds are equal
+            with warnings.catch_warnings():
+                warnings.simplefilter(&#34;ignore&#34;)
+                self.ax.set_xlim3d(self.x_bounds[0] - self.x_lower_resize_pad,
+                                   self.x_bounds[1] + self.x_upper_resize_pad)
+                self.ax.set_ylim3d(self.y_bounds[0] - self.y_lower_resize_pad,
+                                   self.y_bounds[1] + self.y_upper_resize_pad)
+                self.ax.set_zlim3d(self.z_bounds[0] - self.y_lower_resize_pad,
+                                   self.z_bounds[1] + self.y_upper_resize_pad)
 
     def method_title(self):
         if self.title is not None:
@@ -745,7 +749,7 @@ class scatter(plot, color):
 
     def __init__(self,
                  # Specifics
-                 x=None, y=None, z=None, point_size=30, marker=&#34;o&#34;,
+                 x=None, y=None, z=None, point_size=30, marker=&#34;o&#34;, facecolors=None,
                  # Specifics: color
                  alpha=1,
                  color=&#39;darkred&#39;,
@@ -866,13 +870,13 @@ class scatter(plot, color):
 
         if self.color_rule is not None:
             self.graph = self.ax.scatter(self.x, self.y, self.z, label=self.plot_label,
-                                         s=self.point_size, marker=self.marker,
+                                         s=self.point_size, marker=self.marker, facecolors=self.facecolors,
                                          c=self.color_rule, cmap=self.cmap,
                                          alpha=self.alpha)
             self.method_cb()
         else:
             self.graph = self.ax.scatter(self.x, self.y, self.z, label=self.plot_label,
-                                         s=self.point_size, marker=self.marker,
+                                         s=self.point_size, marker=self.marker, facecolors=self.facecolors,
                                          color=self.color,
                                          alpha=self.alpha)
 
@@ -1207,12 +1211,15 @@ def floating_text(ax, text, font, x, y, z, size=20, weight=&#39;normal&#39;, col
                 self.z_upper_resize_pad = pad_z
                 self.z_lower_resize_pad = pad_z
 
-            self.ax.set_xlim3d(self.x_bounds[0] - self.x_lower_resize_pad,
-                               self.x_bounds[1] + self.x_upper_resize_pad)
-            self.ax.set_ylim3d(self.y_bounds[0] - self.y_lower_resize_pad,
-                               self.y_bounds[1] + self.y_upper_resize_pad)
-            self.ax.set_zlim3d(self.z_bounds[0] - self.y_lower_resize_pad,
-                               self.z_bounds[1] + self.y_upper_resize_pad)
+            # Set bounds ignoring warnings if bounds are equal
+            with warnings.catch_warnings():
+                warnings.simplefilter(&#34;ignore&#34;)
+                self.ax.set_xlim3d(self.x_bounds[0] - self.x_lower_resize_pad,
+                                   self.x_bounds[1] + self.x_upper_resize_pad)
+                self.ax.set_ylim3d(self.y_bounds[0] - self.y_lower_resize_pad,
+                                   self.y_bounds[1] + self.y_upper_resize_pad)
+                self.ax.set_zlim3d(self.z_bounds[0] - self.y_lower_resize_pad,
+                                   self.z_bounds[1] + self.y_upper_resize_pad)
 
     def method_title(self):
         if self.title is not None:
@@ -1565,12 +1572,15 @@ def floating_text(ax, text, font, x, y, z, size=20, weight=&#39;normal&#39;, col
             self.z_upper_resize_pad = pad_z
             self.z_lower_resize_pad = pad_z
 
-        self.ax.set_xlim3d(self.x_bounds[0] - self.x_lower_resize_pad,
-                           self.x_bounds[1] + self.x_upper_resize_pad)
-        self.ax.set_ylim3d(self.y_bounds[0] - self.y_lower_resize_pad,
-                           self.y_bounds[1] + self.y_upper_resize_pad)
-        self.ax.set_zlim3d(self.z_bounds[0] - self.y_lower_resize_pad,
-                           self.z_bounds[1] + self.y_upper_resize_pad)</code></pre>
+        # Set bounds ignoring warnings if bounds are equal
+        with warnings.catch_warnings():
+            warnings.simplefilter(&#34;ignore&#34;)
+            self.ax.set_xlim3d(self.x_bounds[0] - self.x_lower_resize_pad,
+                               self.x_bounds[1] + self.x_upper_resize_pad)
+            self.ax.set_ylim3d(self.y_bounds[0] - self.y_lower_resize_pad,
+                               self.y_bounds[1] + self.y_upper_resize_pad)
+            self.ax.set_zlim3d(self.z_bounds[0] - self.y_lower_resize_pad,
+                               self.z_bounds[1] + self.y_upper_resize_pad)</code></pre>
 </details>
 </dd>
 <dt id="mpl_plotter.three_d.methods.attributes.method_scale"><code class="name flex">
@@ -2672,7 +2682,7 @@ backend=None</p></div>
 </dd>
 <dt id="mpl_plotter.three_d.methods.scatter"><code class="flex name class">
 <span>class <span class="ident">scatter</span></span>
-<span>(</span><span>x=None, y=None, z=None, point_size=30, marker='o', alpha=1, color='darkred', cmap='RdBu_r', color_rule=None, color_bar=False, cb_pad=0.1, extend='neither', cb_title=None, cb_orientation='vertical', cb_axis_labelpad=10, cb_tick_number=5, cb_tick_ndecimals=5, shrink=0.75, cb_outline_width=None, cb_title_rotation=None, cb_title_style='normal', cb_title_size=10, cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False, cb_top_title_pad=None, x_cb_top_title=0, cb_vmin=None, cb_vmax=None, cb_ticklabelsize=10, cb_hard_bounds=False, x_scale=None, y_scale=None, z_scale=None, backend='Qt5Agg', font='serif', math_font='dejavuserif', font_color='black', font_size_increase=0, fig=None, ax=None, figsize=(5, 4), shape_and_position=111, azim=-138, elev=19, remove_axis=None, prune=None, resize_axes=True, aspect_equal=False, box_to_plot_pad=10, spines_juggled=(1, 0, 2), spine_color=None, blend_edges=False, workspace_color=None, workspace_color2=None, background_color_figure='white', background_color_plot='white', background_alpha=1, style=None, light=None, dark=None, pane_fill=None, x_upper_bound=None, x_lower_bound=None, y_upper_bound=None, y_lower_bound=None, z_upper_bound=None, z_lower_bound=None, x_bounds=None, y_bounds=None, z_bounds=None, demo_pad_plot=False, x_upper_resize_pad=0, x_lower_resize_pad=0, y_upper_resize_pad=0, y_lower_resize_pad=0, z_upper_resize_pad=0, z_lower_resize_pad=0, show_axes=True, grid=True, grid_color='lightgrey', grid_lines='-.', title=None, title_weight='normal', title_size=12, title_y=1.025, title_color=None, title_font=None, x_label='x', x_label_weight='normal', x_label_size=12, x_label_pad=7, x_label_rotation=None, y_label='y', y_label_weight='normal', y_label_size=12, y_label_pad=7, y_label_rotation=None, z_label='z', z_label_weight='normal', z_label_size=12, z_label_pad=7, z_label_rotation=None, x_tick_number=5, x_tick_labels=None, x_custom_tick_labels=None, x_custom_tick_locations=None, y_tick_number=5, y_tick_labels=None, y_custom_tick_labels=None, y_custom_tick_locations=None, z_tick_number=5, z_tick_labels=None, z_custom_tick_labels=None, z_custom_tick_locations=None, x_tick_rotation=None, y_tick_rotation=None, z_tick_rotation=None, tick_color=None, x_tick_label_pad=4, y_tick_label_pad=4, z_tick_label_pad=4, x_tick_ndecimals=1, y_tick_ndecimals=1, z_tick_ndecimals=1, tick_label_size=10, x_tick_label_size=None, y_tick_label_size=None, z_tick_label_size=None, plot_label=None, legend=False, legend_loc='upper right', legend_size=13, legend_weight='normal', legend_style='normal', legend_handleheight=None, legend_ncol=1, show=False, newplot=False, filename=None, dpi=None, suppress=True)</span>
+<span>(</span><span>x=None, y=None, z=None, point_size=30, marker='o', facecolors=None, alpha=1, color='darkred', cmap='RdBu_r', color_rule=None, color_bar=False, cb_pad=0.1, extend='neither', cb_title=None, cb_orientation='vertical', cb_axis_labelpad=10, cb_tick_number=5, cb_tick_ndecimals=5, shrink=0.75, cb_outline_width=None, cb_title_rotation=None, cb_title_style='normal', cb_title_size=10, cb_top_title_y=1, cb_ytitle_labelpad=10, cb_title_weight='normal', cb_top_title=False, cb_y_title=False, cb_top_title_pad=None, x_cb_top_title=0, cb_vmin=None, cb_vmax=None, cb_ticklabelsize=10, cb_hard_bounds=False, x_scale=None, y_scale=None, z_scale=None, backend='Qt5Agg', font='serif', math_font='dejavuserif', font_color='black', font_size_increase=0, fig=None, ax=None, figsize=(5, 4), shape_and_position=111, azim=-138, elev=19, remove_axis=None, prune=None, resize_axes=True, aspect_equal=False, box_to_plot_pad=10, spines_juggled=(1, 0, 2), spine_color=None, blend_edges=False, workspace_color=None, workspace_color2=None, background_color_figure='white', background_color_plot='white', background_alpha=1, style=None, light=None, dark=None, pane_fill=None, x_upper_bound=None, x_lower_bound=None, y_upper_bound=None, y_lower_bound=None, z_upper_bound=None, z_lower_bound=None, x_bounds=None, y_bounds=None, z_bounds=None, demo_pad_plot=False, x_upper_resize_pad=0, x_lower_resize_pad=0, y_upper_resize_pad=0, y_lower_resize_pad=0, z_upper_resize_pad=0, z_lower_resize_pad=0, show_axes=True, grid=True, grid_color='lightgrey', grid_lines='-.', title=None, title_weight='normal', title_size=12, title_y=1.025, title_color=None, title_font=None, x_label='x', x_label_weight='normal', x_label_size=12, x_label_pad=7, x_label_rotation=None, y_label='y', y_label_weight='normal', y_label_size=12, y_label_pad=7, y_label_rotation=None, z_label='z', z_label_weight='normal', z_label_size=12, z_label_pad=7, z_label_rotation=None, x_tick_number=5, x_tick_labels=None, x_custom_tick_labels=None, x_custom_tick_locations=None, y_tick_number=5, y_tick_labels=None, y_custom_tick_labels=None, y_custom_tick_locations=None, z_tick_number=5, z_tick_labels=None, z_custom_tick_labels=None, z_custom_tick_locations=None, x_tick_rotation=None, y_tick_rotation=None, z_tick_rotation=None, tick_color=None, x_tick_label_pad=4, y_tick_label_pad=4, z_tick_label_pad=4, x_tick_ndecimals=1, y_tick_ndecimals=1, z_tick_ndecimals=1, tick_label_size=10, x_tick_label_size=None, y_tick_label_size=None, z_tick_label_size=None, plot_label=None, legend=False, legend_loc='upper right', legend_size=13, legend_weight='normal', legend_style='normal', legend_handleheight=None, legend_ncol=1, show=False, newplot=False, filename=None, dpi=None, suppress=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Scatter class
@@ -2705,7 +2715,7 @@ backend=None</p></div>
 
     def __init__(self,
                  # Specifics
-                 x=None, y=None, z=None, point_size=30, marker=&#34;o&#34;,
+                 x=None, y=None, z=None, point_size=30, marker=&#34;o&#34;, facecolors=None,
                  # Specifics: color
                  alpha=1,
                  color=&#39;darkred&#39;,
@@ -2826,13 +2836,13 @@ backend=None</p></div>
 
         if self.color_rule is not None:
             self.graph = self.ax.scatter(self.x, self.y, self.z, label=self.plot_label,
-                                         s=self.point_size, marker=self.marker,
+                                         s=self.point_size, marker=self.marker, facecolors=self.facecolors,
                                          c=self.color_rule, cmap=self.cmap,
                                          alpha=self.alpha)
             self.method_cb()
         else:
             self.graph = self.ax.scatter(self.x, self.y, self.z, label=self.plot_label,
-                                         s=self.point_size, marker=self.marker,
+                                         s=self.point_size, marker=self.marker, facecolors=self.facecolors,
                                          color=self.color,
                                          alpha=self.alpha)
 
@@ -2886,13 +2896,13 @@ backend=None</p></div>
 
     if self.color_rule is not None:
         self.graph = self.ax.scatter(self.x, self.y, self.z, label=self.plot_label,
-                                     s=self.point_size, marker=self.marker,
+                                     s=self.point_size, marker=self.marker, facecolors=self.facecolors,
                                      c=self.color_rule, cmap=self.cmap,
                                      alpha=self.alpha)
         self.method_cb()
     else:
         self.graph = self.ax.scatter(self.x, self.y, self.z, label=self.plot_label,
-                                     s=self.point_size, marker=self.marker,
+                                     s=self.point_size, marker=self.marker, facecolors=self.facecolors,
                                      color=self.color,
                                      alpha=self.alpha)</code></pre>
 </details>
