@@ -124,6 +124,17 @@ import matplotlib.font_manager
 from alexandria.shell import print_color
 
 
+&#34;&#34;&#34;
+Global variables
+&#34;&#34;&#34;
+
+__version__ = &#34;4.1.0.post7&#34;
+
+&#34;&#34;&#34;
+General utilities
+&#34;&#34;&#34;
+
+
 def figure(figsize=(6, 6), backend=&#39;Qt5Agg&#39;):
     &#34;&#34;&#34;
     Create a Matplotlib figure with a given backend.
@@ -156,58 +167,6 @@ def get_available_fonts():
         n = f&#34;{i+1}&#34;
         numeral = n + &#34;.&#34; + &#34; &#34;*(4-len(n))
         print(numeral+&#39;&#34;&#39;+names[i]+&#39;&#34;&#39;)
-
-
-# SPDX-FileCopyrightText: © 2021 Antonio López Rivera &lt;antonlopezr99@gmail.com&gt;
-# SPDX-License-Identifier: GPL-3.0-only
-
-&#34;&#34;&#34;
-Huracan utilities
------------------
-&#34;&#34;&#34;
-
-import re
-import sys
-import inspect
-
-
-def setattr_namespace(o, namespace):
-    &#34;&#34;&#34;
-    Set all variables declared in a namespace as as attributes
-    of a class instance.
-    ---
-
-    1. Obtain list of module names
-    2. Get namespace variables
-       - Discard all variables with names starting and ending with &#39;_&#39;
-    3. Create a dictionary of namespace variable names and values
-    4. Set namespace variables as attributes of the input object
-       - Given class instance _o_ will not set as attribute of itself
-       - The parent class of _o_ will not be set as an attribute of _o_
-         if present in the provided namespace.
-
-    :param o: Instance of any given class.
-    :param namespace: A given namespace.
-                      - locals()
-                      - globals()
-
-    :type o: object
-    :type namespace: dict
-    &#34;&#34;&#34;
-    # List of module names
-    _mods_ = list(set(sys.modules) &amp; set(namespace))
-    # List of function arguments
-    _args_ = setattr_namespace.__code__.co_varnames
-    # Get namespace variables:
-    #    List of local variables which are not special variables nor module names
-    keys = [key for key in namespace.keys() if (key[0] != &#39;_&#39; and key[-1] != &#39;_&#39;) and key not in _mods_]
-    # Dictionary of namespace variable names and values
-    vars = {key: namespace[key] for key in keys}
-    for key, value in vars.items():
-        if not type(value) == type(o)\
-                and not isinstance(o, value if inspect.isclass(value) else type(value)):  # Avoid _o_, parent of _o_
-            # Set namespace variables as attributes of the input object
-            setattr(o, key, value)
 
 
 class markers:
@@ -287,23 +246,19 @@ class markers:
 <dl>
 <dt><code class="name"><a title="mpl_plotter.color" href="color/index.html">mpl_plotter.color</a></code></dt>
 <dd>
-<div class="desc"><p>MPL Plotter color methods</p></div>
+<div class="desc"><p>Colors</p></div>
 </dd>
 <dt><code class="name"><a title="mpl_plotter.presets" href="presets/index.html">mpl_plotter.presets</a></code></dt>
 <dd>
-<div class="desc"><p>MPL Plotter preset methods</p></div>
+<div class="desc"><p>Presets</p></div>
 </dd>
 <dt><code class="name"><a title="mpl_plotter.three_d" href="three_d/index.html">mpl_plotter.three_d</a></code></dt>
 <dd>
-<div class="desc"><p>MPL Plotter: 3D plotting</p></div>
+<div class="desc"><h2 id="3d">3D</h2></div>
 </dd>
 <dt><code class="name"><a title="mpl_plotter.two_d" href="two_d/index.html">mpl_plotter.two_d</a></code></dt>
 <dd>
-<div class="desc"><p>MPL Plotter: 2D plotting</p></div>
-</dd>
-<dt><code class="name"><a title="mpl_plotter.utils" href="utils.html">mpl_plotter.utils</a></code></dt>
-<dd>
-<div class="desc"><p>MPL Plotter utilities</p></div>
+<div class="desc"><h2 id="2d">2D</h2></div>
 </dd>
 </dl>
 </section>
@@ -369,72 +324,6 @@ Pyplot.</p>
         n = f&#34;{i+1}&#34;
         numeral = n + &#34;.&#34; + &#34; &#34;*(4-len(n))
         print(numeral+&#39;&#34;&#39;+names[i]+&#39;&#34;&#39;)</code></pre>
-</details>
-</dd>
-<dt id="mpl_plotter.setattr_namespace"><code class="name flex">
-<span>def <span class="ident">setattr_namespace</span></span>(<span>o, namespace)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Set all variables declared in a namespace as as attributes
-of a class instance.</p>
-<hr>
-<ol>
-<li>Obtain list of module names</li>
-<li>Get namespace variables</li>
-<li>Discard all variables with names starting and ending with '_'</li>
-<li>Create a dictionary of namespace variable names and values</li>
-<li>Set namespace variables as attributes of the input object</li>
-<li>Given class instance <em>o</em> will not set as attribute of itself</li>
-<li>The parent class of <em>o</em> will not be set as an attribute of <em>o</em>
-if present in the provided namespace.</li>
-</ol>
-<p>:param o: Instance of any given class.
-:param namespace: A given namespace.
-- locals()
-- globals()</p>
-<p>:type o: object
-:type namespace: dict</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def setattr_namespace(o, namespace):
-    &#34;&#34;&#34;
-    Set all variables declared in a namespace as as attributes
-    of a class instance.
-    ---
-
-    1. Obtain list of module names
-    2. Get namespace variables
-       - Discard all variables with names starting and ending with &#39;_&#39;
-    3. Create a dictionary of namespace variable names and values
-    4. Set namespace variables as attributes of the input object
-       - Given class instance _o_ will not set as attribute of itself
-       - The parent class of _o_ will not be set as an attribute of _o_
-         if present in the provided namespace.
-
-    :param o: Instance of any given class.
-    :param namespace: A given namespace.
-                      - locals()
-                      - globals()
-
-    :type o: object
-    :type namespace: dict
-    &#34;&#34;&#34;
-    # List of module names
-    _mods_ = list(set(sys.modules) &amp; set(namespace))
-    # List of function arguments
-    _args_ = setattr_namespace.__code__.co_varnames
-    # Get namespace variables:
-    #    List of local variables which are not special variables nor module names
-    keys = [key for key in namespace.keys() if (key[0] != &#39;_&#39; and key[-1] != &#39;_&#39;) and key not in _mods_]
-    # Dictionary of namespace variable names and values
-    vars = {key: namespace[key] for key in keys}
-    for key, value in vars.items():
-        if not type(value) == type(o)\
-                and not isinstance(o, value if inspect.isclass(value) else type(value)):  # Avoid _o_, parent of _o_
-            # Set namespace variables as attributes of the input object
-            setattr(o, key, value)</code></pre>
 </details>
 </dd>
 </dl>
@@ -693,14 +582,12 @@ if present in the provided namespace.</li>
 <li><code><a title="mpl_plotter.presets" href="presets/index.html">mpl_plotter.presets</a></code></li>
 <li><code><a title="mpl_plotter.three_d" href="three_d/index.html">mpl_plotter.three_d</a></code></li>
 <li><code><a title="mpl_plotter.two_d" href="two_d/index.html">mpl_plotter.two_d</a></code></li>
-<li><code><a title="mpl_plotter.utils" href="utils.html">mpl_plotter.utils</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="mpl_plotter.figure" href="#mpl_plotter.figure">figure</a></code></li>
 <li><code><a title="mpl_plotter.get_available_fonts" href="#mpl_plotter.get_available_fonts">get_available_fonts</a></code></li>
-<li><code><a title="mpl_plotter.setattr_namespace" href="#mpl_plotter.setattr_namespace">setattr_namespace</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
